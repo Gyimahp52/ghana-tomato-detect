@@ -1,8 +1,12 @@
 import React from 'react';
-import { CheckCircle, AlertTriangle, Leaf, Pill, Clock, Info, Calendar, MapPin, AlertCircle } from 'lucide-react';
+import { CheckCircle, AlertTriangle, AlertCircle, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import PrescriptionCard from './PrescriptionCard';
+import SymptomsCard from './SymptomsCard';
+import PreventionCard from './PreventionCard';
+import FarmingTipsCard from './FarmingTipsCard';
 
 interface PredictionResult {
   label: string;
@@ -177,138 +181,17 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
 
       {/* Detailed Prescription - Only show for diseases */}
       {disease.severity !== 'healthy' && (
-        <Card className="border-l-4 border-l-blue-500">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Pill className="w-5 h-5 text-blue-600" />
-              Detailed Treatment Prescription
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Alert className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                <strong>Act immediately!</strong> Early treatment is crucial for successful recovery. 
-                Follow this prescription carefully for best results.
-              </AlertDescription>
-            </Alert>
-
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Immediate Actions */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    1
-                  </div>
-                  <h4 className="font-semibold text-red-700">Immediate Actions (Today)</h4>
-                </div>
-                {disease.prescription.immediate.map((action, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-200">
-                    <Clock className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-700">{action}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Weekly Actions */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    2
-                  </div>
-                  <h4 className="font-semibold text-orange-700">Weekly Care (Next 3-4 weeks)</h4>
-                </div>
-                {disease.prescription.weekly.map((action, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-200">
-                    <Calendar className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-700">{action}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Monthly Actions */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                    3
-                  </div>
-                  <h4 className="font-semibold text-green-700">Long-term Care (Monthly)</h4>
-                </div>
-                {disease.prescription.monthly.map((action, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-200">
-                    <Leaf className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-gray-700">{action}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <PrescriptionCard prescription={disease.prescription} />
       )}
 
       {/* Ghana-Specific Farming Tips */}
-      <Card className="bg-gradient-to-r from-green-50 to-blue-50">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-green-600" />
-            Ghana-Specific Farming Tips
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {disease.farmingTips.map((tip, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg shadow-sm">
-                <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
-                  🇬🇭
-                </div>
-                <p className="text-gray-700">{tip}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <FarmingTipsCard farmingTips={disease.farmingTips} />
 
-      {/* ... keep existing code (symptoms, prevention, and disclaimer sections) */}
-      
       {/* Symptoms */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Leaf className="w-5 h-5 text-green-600" />
-            Identified Symptoms
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="grid md:grid-cols-2 gap-2">
-            {disease.symptoms.map((symptom, index) => (
-              <li key={index} className="flex items-center gap-2 text-gray-700">
-                <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                {symptom}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+      <SymptomsCard symptoms={disease.symptoms} />
 
       {/* Prevention Tips */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle className="w-5 h-5 text-green-600" />
-            Prevention for Future Crops
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid md:grid-cols-2 gap-4">
-            {disease.prevention.map((tip, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-700">{tip}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <PreventionCard preventionTips={disease.prevention} />
 
       {/* Professional Consultation Reminder */}
       <Alert>
