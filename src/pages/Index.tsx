@@ -48,16 +48,26 @@ const Index = () => {
 
       console.log('Sending request to API...');
       
+      // Add CORS mode and additional headers to handle cross-origin requests
       const response = await fetch('https://tomatoe-plant-disease-predictor.onrender.com/predict', {
         method: 'POST',
         body: formData,
+        mode: 'cors', // Enable CORS
         headers: {
-          'accept': 'application/json',
+          'Accept': 'application/json',
         },
+        // Add timeout handling
+        signal: AbortSignal.timeout(30000) // 30 seconds timeout
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // More detailed error handling
+        const errorText = await response.text().catch(() => 'Unknown error');
+        console.error('API Error Response:', errorText);
+        throw new Error(`API returned ${response.status}: ${response.statusText}. ${errorText}`);
       }
 
       const data: PredictionResult = await response.json();
@@ -74,11 +84,46 @@ const Index = () => {
 
     } catch (error) {
       console.error('Error analyzing image:', error);
+      
+      // Enhanced error handling with specific error messages
+      let errorMessage = "There was an error analyzing your image. Please try again.";
+      
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        errorMessage = "Unable to connect to the AI service. This might be due to network issues or CORS restrictions. Please check your internet connection and try again.";
+      } else if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = "The request timed out. The AI service might be slow to respond. Please try again.";
+        } else if (error.message.includes('CORS')) {
+          errorMessage = "Cross-origin request blocked. The AI service needs to allow requests from this domain.";
+        } else {
+          errorMessage = `Analysis failed: ${error.message}`;
+        }
+      }
+      
       toast({
         title: "Analysis Failed",
-        description: "There was an error analyzing your image. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
+
+      // For development: Try a mock response if the real API fails
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Falling back to mock response for development');
+        setTimeout(() => {
+          const mockResult: PredictionResult = {
+            label: 'tomatoe-healthy',
+            probability: 0.95,
+            confidence: 0.95,
+            image_path: 'mock_path'
+          };
+          setProcessingStage('complete');
+          setResult(mockResult);
+          toast({
+            title: "Development Mode",
+            description: "Using mock data since the API is unavailable.",
+          });
+        }, 2000);
+      }
     } finally {
       setIsProcessing(false);
     }
