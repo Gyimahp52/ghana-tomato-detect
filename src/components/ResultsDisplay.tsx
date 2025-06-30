@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CheckCircle, AlertTriangle, Leaf, Pills, Clock, Info } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Leaf, Pill, Clock, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -154,7 +154,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Pills className="w-5 h-5 text-blue-600" />
+              <Pill className="w-5 h-5 text-blue-600" />
               Treatment Recommendations
             </CardTitle>
           </CardHeader>
