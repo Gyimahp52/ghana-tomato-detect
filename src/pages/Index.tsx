@@ -47,31 +47,45 @@ const Index = () => {
       formData.append('file', selectedImage);
 
       console.log('Sending request to API...');
+      console.log('Selected image:', selectedImage.name, selectedImage.size, selectedImage.type);
       
-      // Add CORS mode and additional headers to handle cross-origin requests
+      // Simplified fetch request without explicit CORS mode
       const response = await fetch('https://tomatoe-plant-disease-predictor.onrender.com/predict', {
         method: 'POST',
         body: formData,
-        mode: 'cors', // Enable CORS
-        headers: {
-          'Accept': 'application/json',
-        },
-        // Add timeout handling
-        signal: AbortSignal.timeout(30000) // 30 seconds timeout
+        // Remove explicit CORS mode and headers that might cause preflight issues
+        signal: AbortSignal.timeout(45000) // Increased timeout to 45 seconds
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
+      console.log('Response received:', response.status, response.statusText);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
-        // More detailed error handling
-        const errorText = await response.text().catch(() => 'Unknown error');
+        const errorText = await response.text().catch(() => 'No error details available');
         console.error('API Error Response:', errorText);
-        throw new Error(`API returned ${response.status}: ${response.statusText}. ${errorText}`);
+        console.error('Response status:', response.status);
+        console.error('Response statusText:', response.statusText);
+        throw new Error(`Server responded with ${response.status}: ${response.statusText}`);
+      }
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      console.log('Response content-type:', contentType);
+      
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error('Non-JSON response:', textResponse);
+        throw new Error('Server returned non-JSON response');
       }
 
       const data: PredictionResult = await response.json();
-      console.log('API Response:', data);
+      console.log('API Response data:', data);
+
+      // Validate response structure
+      if (!data || typeof data.label === 'undefined') {
+        console.error('Invalid response structure:', data);
+        throw new Error('Server returned invalid response format');
+      }
 
       setProcessingStage('complete');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -84,17 +98,25 @@ const Index = () => {
 
     } catch (error) {
       console.error('Error analyzing image:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
       
-      // Enhanced error handling with specific error messages
       let errorMessage = "There was an error analyzing your image. Please try again.";
       
-      if (error instanceof TypeError && error.message === 'Failed to fetch') {
-        errorMessage = "Unable to connect to the AI service. This might be due to network issues or CORS restrictions. Please check your internet connection and try again.";
+      if (error instanceof TypeError) {
+        if (error.message === 'Failed to fetch' || error.message.includes('NetworkError')) {
+          errorMessage = "Network connection failed. The server might be temporarily unavailable or there may be a CORS policy blocking the request. Please try again in a few moments.";
+        } else {
+          errorMessage = `Network error: ${error.message}`;
+        }
       } else if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          errorMessage = "The request timed out. The AI service might be slow to respond. Please try again.";
+          errorMessage = "Request timed out. The server is taking too long to respond. Please try again.";
         } else if (error.message.includes('CORS')) {
-          errorMessage = "Cross-origin request blocked. The AI service needs to allow requests from this domain.";
+          errorMessage = "Cross-origin request blocked. The server needs to allow requests from this domain.";
+        } else if (error.message.includes('Server responded with')) {
+          errorMessage = `Server error: ${error.message}. Please check if the API is working correctly.`;
         } else {
           errorMessage = `Analysis failed: ${error.message}`;
         }
@@ -106,9 +128,9 @@ const Index = () => {
         variant: "destructive",
       });
 
-      // For development: Try a mock response if the real API fails
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Falling back to mock response for development');
+      // Development fallback - only use if we're sure it's a CORS issue
+      if (process.env.NODE_ENV === 'development' && error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.log('CORS issue detected in development, using mock response after delay...');
         setTimeout(() => {
           const mockResult: PredictionResult = {
             label: 'tomatoe-healthy',
@@ -119,8 +141,8 @@ const Index = () => {
           setProcessingStage('complete');
           setResult(mockResult);
           toast({
-            title: "Development Mode",
-            description: "Using mock data since the API is unavailable.",
+            title: "Development Mode - CORS Workaround",
+            description: "Using mock data due to CORS restrictions in development.",
           });
         }, 2000);
       }
