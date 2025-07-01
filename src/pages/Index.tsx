@@ -173,7 +173,7 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
-                  TomatoAI Ghana
+                  TomatoAI
                 </h1>
                 <p className="text-sm text-emerald-600 font-medium">Advanced CNN Disease Detection</p>
               </div>
@@ -272,7 +272,7 @@ const Index = () => {
         {!result && !isProcessing && (
           <div className="mt-20 animate-fade-in">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI Ghana?</h3>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI ?</h3>
               <p className="text-lg text-gray-600">Built specifically for Ghanaian farmers with local expertise</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -318,7 +318,7 @@ const Index = () => {
               <div className="p-2 bg-white/20 rounded-lg">
                 <Leaf className="w-6 h-6" />
               </div>
-              <h4 className="text-xl font-bold">TomatoAI Ghana</h4>
+              <h4 className="text-xl font-bold">TomatoAI</h4>
             </div>
             <p className="text-emerald-100 mb-4">
               CNN-Based Framework for Early Detection and Diagnosis of Tomato Diseases
