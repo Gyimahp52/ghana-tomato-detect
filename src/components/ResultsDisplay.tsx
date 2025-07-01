@@ -50,6 +50,21 @@ const diseaseInfo: Record<string, {
     farmingTips: ['Your plant is doing well! Keep up the good work', 'This is the ideal condition for tomato growth'],
     expectedRecovery: 'Plant is healthy - maintain current care routine'
   },
+  'tomaote-not-healthy': {
+    name: 'Unhealthy Plant - General Disease',
+    severity: 'moderate',
+    description: 'Your tomato plant shows signs of disease or stress. The plant requires immediate attention and treatment.',
+    symptoms: ['Visible leaf discoloration', 'Abnormal leaf patterns', 'Signs of disease or stress', 'Reduced plant vigor'],
+    treatment: ['Remove affected leaves immediately', 'Apply broad-spectrum fungicide', 'Improve growing conditions', 'Monitor closely for specific symptoms'],
+    prevention: ['Ensure proper plant spacing', 'Maintain good air circulation', 'Water at soil level to avoid leaf wetness', 'Regular plant inspection'],
+    prescription: {
+      immediate: ['Remove all visibly affected leaves and dispose safely', 'Apply copper-based fungicide (2-3ml per liter)', 'Stop overhead watering immediately'],
+      weekly: ['Apply fungicide spray every 7 days for 2-3 weeks', 'Monitor for specific disease symptoms', 'Check neighboring plants for spread'],
+      monthly: ['Improve soil drainage if needed', 'Apply organic compost to boost plant immunity', 'Consider replanting with disease-resistant varieties']
+    },
+    farmingTips: ['Early detection is key for successful treatment', 'Document symptoms to identify specific disease', 'Isolate affected plants when possible'],
+    expectedRecovery: '2-4 weeks with proper treatment - monitor for specific disease identification'
+  },
   'tomatoe-bacterial-spot': {
     name: 'Bacterial Spot',
     severity: 'moderate',
@@ -113,8 +128,23 @@ const diseaseInfo: Record<string, {
 };
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }) => {
-  const diseaseKey = result.label.toLowerCase().replace(/[^a-z-]/g, '');
-  const disease = diseaseInfo[diseaseKey] || diseaseInfo['tomatoe-healthy'];
+  // Normalize the disease label to match our disease keys
+  const normalizeLabel = (label: string): string => {
+    const normalized = label.toLowerCase().replace(/[^a-z-]/g, '');
+    console.log('Normalizing label:', label, 'to:', normalized);
+    return normalized;
+  };
+
+  const diseaseKey = normalizeLabel(result.label);
+  const disease = diseaseInfo[diseaseKey];
+  
+  // If we don't have specific disease info, fall back to general unhealthy info
+  const finalDisease = disease || (diseaseKey.includes('not-healthy') || diseaseKey.includes('unhealthy') 
+    ? diseaseInfo['tomaote-not-healthy'] 
+    : diseaseInfo['tomatoe-healthy']);
+
+  console.log('Disease key:', diseaseKey, 'Found disease:', !!disease, 'Using:', finalDisease.name);
+
   const confidencePercentage = Math.round(result.confidence * 100);
 
   const getSeverityColor = (severity: string) => {
@@ -160,18 +190,18 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
             </div>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                {getSeverityIcon(disease.severity)}
+                {getSeverityIcon(finalDisease.severity)}
                 <div>
-                  <h3 className="text-xl font-semibold">{disease.name}</h3>
-                  <Badge className={`${getSeverityColor(disease.severity)} border-0`}>
-                    {disease.severity.charAt(0).toUpperCase() + disease.severity.slice(1)}
+                  <h3 className="text-xl font-semibold">{finalDisease.name}</h3>
+                  <Badge className={`${getSeverityColor(finalDisease.severity)} border-0`}>
+                    {finalDisease.severity.charAt(0).toUpperCase() + finalDisease.severity.slice(1)}
                   </Badge>
                 </div>
               </div>
-              <p className="text-gray-600 leading-relaxed">{disease.description}</p>
+              <p className="text-gray-600 leading-relaxed">{finalDisease.description}</p>
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>Expected Recovery:</strong> {disease.expectedRecovery}
+                  <strong>Expected Recovery:</strong> {finalDisease.expectedRecovery}
                 </p>
               </div>
             </div>
@@ -180,18 +210,18 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
       </Card>
 
       {/* Detailed Prescription - Only show for diseases */}
-      {disease.severity !== 'healthy' && (
-        <PrescriptionCard prescription={disease.prescription} />
+      {finalDisease.severity !== 'healthy' && (
+        <PrescriptionCard prescription={finalDisease.prescription} />
       )}
 
       {/* Ghana-Specific Farming Tips */}
-      <FarmingTipsCard farmingTips={disease.farmingTips} />
+      <FarmingTipsCard farmingTips={finalDisease.farmingTips} />
 
       {/* Symptoms */}
-      <SymptomsCard symptoms={disease.symptoms} />
+      <SymptomsCard symptoms={finalDisease.symptoms} />
 
       {/* Prevention Tips */}
-      <PreventionCard preventionTips={disease.prevention} />
+      <PreventionCard preventionTips={finalDisease.prevention} />
 
       {/* Professional Consultation Reminder */}
       <Alert>

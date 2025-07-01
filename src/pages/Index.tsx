@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,37 +22,6 @@ const Index = () => {
   const handleImageSelect = (file: File | null) => {
     setSelectedImage(file);
     setResult(null);
-  };
-
-  // Improved disease label normalization
-  const normalizeDiseaseLabel = (label: string): string => {
-    const normalized = label.toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-    
-    console.log('Original label:', label, 'Normalized:', normalized);
-    
-    // Map common variations to standard labels
-    const labelMappings: Record<string, string> = {
-      'healthy': 'tomatoe-healthy',
-      'tomato-healthy': 'tomatoe-healthy',
-      'tomatoe-healthy': 'tomatoe-healthy',
-      'bacterial-spot': 'tomatoe-bacterial-spot',
-      'tomato-bacterial-spot': 'tomatoe-bacterial-spot',
-      'tomatoe-bacterial-spot': 'tomatoe-bacterial-spot',
-      'early-blight': 'tomatoe-early-blight',
-      'tomato-early-blight': 'tomatoe-early-blight',
-      'tomatoe-early-blight': 'tomatoe-early-blight',
-      'late-blight': 'tomatoe-late-blight',
-      'tomato-late-blight': 'tomatoe-late-blight',
-      'tomatoe-late-blight': 'tomatoe-late-blight',
-      'leaf-mold': 'tomatoe-leaf-mold',
-      'tomato-leaf-mold': 'tomatoe-leaf-mold',
-      'tomatoe-leaf-mold': 'tomatoe-leaf-mold',
-    };
-
-    return labelMappings[normalized] || normalized;
   };
 
   const analyzeImage = async () => {
@@ -104,17 +72,15 @@ const Index = () => {
       const data: PredictionResult = await response.json();
       console.log('Raw API Response data:', data);
 
-      // Validate and normalize the response
+      // Validate the response
       if (!data || typeof data.label === 'undefined') {
         console.error('Invalid response structure:', data);
         throw new Error('Server returned invalid response format');
       }
 
-      // Normalize the disease label for consistent mapping
-      const normalizedLabel = normalizeDiseaseLabel(data.label);
+      // Use the label directly as returned by the API
       const processedResult = {
         ...data,
-        label: normalizedLabel,
         confidence: data.confidence || data.probability || 0.8,
         probability: data.probability || data.confidence || 0.8
       };
@@ -160,6 +126,7 @@ const Index = () => {
         console.log('CORS issue detected in development, using mock response...');
         setTimeout(() => {
           const mockDiseases = [
+            { label: 'tomaote-not-healthy', confidence: 0.94 },
             { label: 'tomatoe-bacterial-spot', confidence: 0.89 },
             { label: 'tomatoe-early-blight', confidence: 0.92 },
             { label: 'tomatoe-late-blight', confidence: 0.87 },
