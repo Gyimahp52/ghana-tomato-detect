@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
 import ResultsDisplay from '@/components/ResultsDisplay';
+import Badge from '@/components/ui/badge';
 
 interface PredictionResult {
   label: string;
@@ -18,10 +19,71 @@ const Index = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStage, setProcessingStage] = useState<'uploading' | 'analyzing' | 'complete'>('uploading');
   const [result, setResult] = useState<PredictionResult | null>(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [forceOffline, setForceOffline] = useState(false);
+
+  // Monitor online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleImageSelect = (file: File | null) => {
     setSelectedImage(file);
     setResult(null);
+  };
+
+  const analyzeImageOffline = async () => {
+    if (!selectedImage) return;
+
+    setIsProcessing(true);
+    setProcessingStage('uploading');
+
+    try {
+      // Import the offline detection service dynamically
+      const { offlineDetectionService } = await import('@/services/offlineDetection');
+      
+      // Simulate uploading stage
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setProcessingStage('analyzing');
+
+      console.log('Running offline disease detection...');
+      const offlineResult = await offlineDetectionService.detectDisease(selectedImage);
+      
+      console.log('Offline analysis result:', offlineResult);
+
+      setProcessingStage('complete');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const processedResult = {
+        ...offlineResult,
+        offline: true
+      };
+
+      setResult(processedResult);
+      toast({
+        title: "Offline Analysis Complete",
+        description: `Disease detection completed offline with ${Math.round(offlineResult.confidence * 100)}% confidence.`,
+      });
+
+    } catch (error) {
+      console.error('Error in offline analysis:', error);
+      toast({
+        title: "Offline Analysis Failed",
+        description: "There was an error analyzing your image offline. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const analyzeImage = async () => {
@@ -31,6 +93,12 @@ const Index = () => {
         description: "Please select an image before analyzing.",
         variant: "destructive",
       });
+      return;
+    }
+
+    // Use offline analysis if offline or forced offline
+    if (!isOnline || forceOffline) {
+      await analyzeImageOffline();
       return;
     }
 
@@ -82,7 +150,8 @@ const Index = () => {
       const processedResult = {
         ...data,
         confidence: data.confidence || data.probability || 0.8,
-        probability: data.probability || data.confidence || 0.8
+        probability: data.probability || data.confidence || 0.8,
+        offline: false
       };
 
       console.log('Processed result:', processedResult);
@@ -92,66 +161,20 @@ const Index = () => {
 
       setResult(processedResult);
       toast({
-        title: "Analysis Complete",
+        title: "Online Analysis Complete",
         description: `Disease detection completed with ${Math.round(processedResult.confidence * 100)}% confidence.`,
       });
 
     } catch (error) {
-      console.error('Error analyzing image:', error);
+      console.error('Error analyzing image online, falling back to offline:', error);
       
-      let errorMessage = "There was an error analyzing your image. Please try again.";
-      
-      if (error instanceof TypeError) {
-        if (error.message === 'Failed to fetch' || error.message.includes('NetworkError')) {
-          errorMessage = "Network connection failed. The server might be temporarily unavailable. Please try again in a few moments.";
-        } else {
-          errorMessage = `Network error: ${error.message}`;
-        }
-      } else if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = "Request timed out. The server is taking too long to respond. Please try again.";
-        } else {
-          errorMessage = `Analysis failed: ${error.message}`;
-        }
-      }
-      
+      // Fallback to offline analysis
       toast({
-        title: "Analysis Failed",
-        description: errorMessage,
-        variant: "destructive",
+        title: "Switching to Offline Mode",
+        description: "Server unavailable. Analyzing image offline...",
       });
-
-      // Development fallback with more realistic disease options
-      if (process.env.NODE_ENV === 'development' && error instanceof TypeError && error.message === 'Failed to fetch') {
-        console.log('CORS issue detected in development, using mock response...');
-        setTimeout(() => {
-          const mockDiseases = [
-            { label: 'tomaote-not-healthy', confidence: 0.94 },
-            { label: 'tomatoe-bacterial-spot', confidence: 0.89 },
-            { label: 'tomatoe-early-blight', confidence: 0.92 },
-            { label: 'tomatoe-late-blight', confidence: 0.87 },
-            { label: 'tomatoe-leaf-mold', confidence: 0.91 },
-            { label: 'tomatoe-healthy', confidence: 0.95 }
-          ];
-          
-          const randomDisease = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
-          const mockResult: PredictionResult = {
-            label: randomDisease.label,
-            probability: randomDisease.confidence,
-            confidence: randomDisease.confidence,
-            image_path: 'mock_path'
-          };
-          
-          setProcessingStage('complete');
-          setResult(mockResult);
-          toast({
-            title: "Development Mode - CORS Workaround",
-            description: "Using mock data due to CORS restrictions in development.",
-          });
-        }, 2000);
-      }
-    } finally {
-      setIsProcessing(false);
+      
+      await analyzeImageOffline();
     }
   };
 
@@ -175,7 +198,14 @@ const Index = () => {
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
                   TomatoAI
                 </h1>
-                <p className="text-sm text-emerald-600 font-medium">Advanced CNN Disease Detection</p>
+                <p className="text-sm text-emerald-600 font-medium flex items-center gap-2">
+                  Advanced CNN Disease Detection
+                  {!isOnline && (
+                    <Badge variant="outline" className="text-xs">
+                      Offline Mode
+                    </Badge>
+                  )}
+                </p>
               </div>
             </div>
             <div className="hidden md:flex items-center space-x-8 text-sm">
@@ -185,11 +215,11 @@ const Index = () => {
               </div>
               <div className="flex items-center space-x-2 text-emerald-700">
                 <Users className="w-5 h-5" />
-                <span className="font-medium">Farmer Friendly</span>
+                <span className="font-medium">Organic Treatments</span>
               </div>
               <div className="flex items-center space-x-2 text-emerald-700">
                 <Globe className="w-5 h-5" />
-                <span className="font-medium">Ghana Focused</span>
+                <span className="font-medium">Works Offline</span>
               </div>
             </div>
           </div>
@@ -207,17 +237,17 @@ const Index = () => {
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
                 Upload a photo of your tomato plant and get instant AI-powered diagnosis with 
-                treatment recommendations tailored for Ghanaian farming conditions.
+                comprehensive organic and cultural treatment recommendations.
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-sm">
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ 95%+ Accuracy</span>
+                  <span className="text-emerald-700 font-medium">✓ Works Offline</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ Instant Results</span>
+                  <span className="text-emerald-700 font-medium">✓ Organic Solutions</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ Local Expertise</span>
+                  <span className="text-emerald-700 font-medium">✓ Multiple Treatment Options</span>
                 </div>
               </div>
             </div>
@@ -253,15 +283,31 @@ const Index = () => {
               </div>
               
               {selectedImage && (
-                <div className="text-center animate-scale-in">
+                <div className="text-center animate-scale-in space-y-4">
                   <Button 
                     onClick={analyzeImage}
                     size="lg"
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Brain className="w-6 h-6 mr-3" />
-                    Analyze Plant Health
+                    {!isOnline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
                   </Button>
+                  
+                  {isOnline && !forceOffline && (
+                    <div>
+                      <Button 
+                        onClick={() => {
+                          setForceOffline(true);
+                          analyzeImage();
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="ml-4"
+                      >
+                        Try Offline Mode
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -272,17 +318,17 @@ const Index = () => {
         {!result && !isProcessing && (
           <div className="mt-20 animate-fade-in">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI ?</h3>
-              <p className="text-lg text-gray-600">Built specifically for Ghanaian farmers with local expertise</p>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI?</h3>
+              <p className="text-lg text-gray-600">Comprehensive organic solutions that work online and offline</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-emerald-100">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Advanced AI Detection</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Works Completely Offline</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Our CNN model is specifically trained on tomato diseases common in Ghana's climate, achieving 95%+ accuracy in disease identification.
+                  Advanced offline AI model that works without internet connection, ensuring you can diagnose diseases anytime, anywhere.
                 </p>
               </div>
               
@@ -290,9 +336,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Leaf className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Instant Diagnosis</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Comprehensive Organic Solutions</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Get immediate disease identification and comprehensive treatment recommendations within seconds of uploading your image.
+                  Multiple treatment options including organic, cultural, and biological methods - not just chemical fungicides.
                 </p>
               </div>
               
@@ -300,9 +346,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Local Expertise</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Local Ghanaian Solutions</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Practical treatments and prevention strategies specifically designed for Ghana's farming conditions and available resources.
+                  Treatments using locally available ingredients and methods specifically designed for Ghana's farming conditions.
                 </p>
               </div>
             </div>
@@ -321,10 +367,10 @@ const Index = () => {
               <h4 className="text-xl font-bold">TomatoAI</h4>
             </div>
             <p className="text-emerald-100 mb-4">
-              CNN-Based Framework for Early Detection and Diagnosis of Tomato Diseases
+              Comprehensive Offline Plant Disease Detection with Organic Treatment Solutions
             </p>
             <p className="text-emerald-200 text-sm">
-              &copy; 2025 TomatoAI Ghana - Empowering Farmers with AI Technology
+              &copy; 2025 TomatoAI Ghana - Empowering Farmers with Sustainable AI Technology
             </p>
           </div>
         </div>
