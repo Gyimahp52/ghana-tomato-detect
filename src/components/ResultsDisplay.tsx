@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DiagnosisHeader from './DiagnosisHeader';
 import OfflineNotice from './OfflineNotice';
@@ -7,7 +6,7 @@ import PreventionCard from './PreventionCard';
 import FarmingTipsCard from './FarmingTipsCard';
 import TreatmentRecommendations from './TreatmentRecommendations';
 import ConsultationNotice from './ConsultationNotice';
-import { expandedDiseaseInfo } from '@/data/expandedTreatments';
+import { expandedDiseaseInfo } from '@/data/diseases';
 
 interface PredictionResult {
   label: string;
