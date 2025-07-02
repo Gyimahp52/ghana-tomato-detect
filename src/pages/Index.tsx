@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
 import ImageUpload from '@/components/ImageUpload';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
 import ResultsDisplay from '@/components/ResultsDisplay';
-import Badge from '@/components/ui/badge';
 
 interface PredictionResult {
   label: string;
