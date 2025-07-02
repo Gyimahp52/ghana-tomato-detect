@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DiagnosisHeader from './DiagnosisHeader';
 import OfflineNotice from './OfflineNotice';
@@ -24,20 +25,44 @@ interface ResultsDisplayProps {
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }) => {
   // Normalize the disease label to match our disease keys
   const normalizeLabel = (label: string): string => {
-    const normalized = label.toLowerCase().replace(/[^a-z-]/g, '');
+    // Handle the API's inconsistent spelling of "tomaote" vs "tomatoe"
+    let normalized = label.toLowerCase().replace(/[^a-z-]/g, '');
+    
+    // Fix the spelling inconsistency
+    if (normalized.startsWith('tomaote')) {
+      normalized = normalized.replace('tomaote', 'tomatoe');
+    }
+    
     console.log('Normalizing label:', label, 'to:', normalized);
     return normalized;
   };
 
   const diseaseKey = normalizeLabel(result.label);
-  const disease = expandedDiseaseInfo[diseaseKey];
+  let disease = expandedDiseaseInfo[diseaseKey];
   
-  // If we don't have specific disease info, fall back to general unhealthy info
-  const finalDisease = disease || (diseaseKey.includes('not-healthy') || diseaseKey.includes('unhealthy') 
-    ? expandedDiseaseInfo['tomaote-not-healthy'] 
-    : expandedDiseaseInfo['tomatoe-healthy']);
+  // If we don't have specific disease info, fall back based on label content
+  if (!disease) {
+    console.log('Disease not found for key:', diseaseKey, 'Available keys:', Object.keys(expandedDiseaseInfo));
+    
+    if (diseaseKey.includes('not-healthy') || diseaseKey.includes('unhealthy')) {
+      disease = expandedDiseaseInfo['tomaote-not-healthy'];
+    } else if (diseaseKey.includes('healthy')) {
+      disease = expandedDiseaseInfo['tomatoe-healthy'];
+    } else if (diseaseKey.includes('bacterial') || diseaseKey.includes('spot')) {
+      disease = expandedDiseaseInfo['tomatoe-bacterial-spot'];
+    } else if (diseaseKey.includes('early') && diseaseKey.includes('blight')) {
+      disease = expandedDiseaseInfo['tomatoe-early-blight'];
+    } else if (diseaseKey.includes('late') && diseaseKey.includes('blight')) {
+      disease = expandedDiseaseInfo['tomatoe-late-blight'];
+    } else if (diseaseKey.includes('leaf') && diseaseKey.includes('mold')) {
+      disease = expandedDiseaseInfo['tomatoe-leaf-mold'];
+    } else {
+      // Final fallback to general not healthy
+      disease = expandedDiseaseInfo['tomaoe-not-healthy'];
+    }
+  }
 
-  console.log('Disease key:', diseaseKey, 'Found disease:', !!disease, 'Using:', finalDisease.name);
+  console.log('Disease key:', diseaseKey, 'Found disease:', !!expandedDiseaseInfo[diseaseKey], 'Using:', disease.name);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -45,25 +70,25 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
       <DiagnosisHeader 
         result={result} 
         selectedImage={selectedImage} 
-        disease={finalDisease} 
+        disease={disease} 
       />
 
       {/* Offline Detection Notice */}
       <OfflineNotice isOffline={!!result.offline} />
 
       {/* Comprehensive Treatment Recommendations */}
-      {finalDisease.severity !== 'healthy' && (
-        <TreatmentRecommendations treatments={finalDisease.treatments} />
+      {disease.severity !== 'healthy' && (
+        <TreatmentRecommendations treatments={disease.treatments} />
       )}
 
       {/* Ghana-Specific Farming Tips */}
-      <FarmingTipsCard farmingTips={finalDisease.farmingTips} />
+      <FarmingTipsCard farmingTips={disease.farmingTips} />
 
       {/* Symptoms */}
-      <SymptomsCard symptoms={finalDisease.symptoms} />
+      <SymptomsCard symptoms={disease.symptoms} />
 
       {/* Prevention Tips */}
-      <PreventionCard preventionTips={finalDisease.prevention} />
+      <PreventionCard preventionTips={disease.prevention} />
 
       {/* Professional Consultation Reminder */}
       <ConsultationNotice />

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ interface PredictionResult {
   probability: number;
   confidence: number;
   image_path: string;
+  offline?: boolean;
 }
 
 const Index = () => {
@@ -39,11 +41,13 @@ const Index = () => {
   const handleImageSelect = (file: File | null) => {
     setSelectedImage(file);
     setResult(null);
+    setForceOffline(false);
   };
 
   const analyzeImageOffline = async () => {
     if (!selectedImage) return;
 
+    console.log('Starting offline analysis...');
     setIsProcessing(true);
     setProcessingStage('uploading');
 
@@ -52,7 +56,7 @@ const Index = () => {
       const { offlineDetectionService } = await import('@/services/offlineDetection');
       
       // Simulate uploading stage
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setProcessingStage('analyzing');
 
       console.log('Running offline disease detection...');
@@ -60,15 +64,20 @@ const Index = () => {
       
       console.log('Offline analysis result:', offlineResult);
 
+      // Simulate analysis completion
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setProcessingStage('complete');
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       const processedResult = {
         ...offlineResult,
         offline: true
       };
 
+      console.log('Setting offline result:', processedResult);
       setResult(processedResult);
+      setIsProcessing(false);
+
       toast({
         title: "Offline Analysis Complete",
         description: `Disease detection completed offline with ${Math.round(offlineResult.confidence * 100)}% confidence.`,
@@ -76,13 +85,14 @@ const Index = () => {
 
     } catch (error) {
       console.error('Error in offline analysis:', error);
+      setIsProcessing(false);
+      setProcessingStage('uploading');
+      
       toast({
         title: "Offline Analysis Failed",
         description: "There was an error analyzing your image offline. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -107,7 +117,7 @@ const Index = () => {
 
     try {
       // Simulate uploading stage
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setProcessingStage('analyzing');
 
       const formData = new FormData();
@@ -156,10 +166,14 @@ const Index = () => {
 
       console.log('Processed result:', processedResult);
 
+      // Simulate completion stage
       setProcessingStage('complete');
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 800));
 
+      console.log('Setting online result:', processedResult);
       setResult(processedResult);
+      setIsProcessing(false);
+
       toast({
         title: "Online Analysis Complete",
         description: `Disease detection completed with ${Math.round(processedResult.confidence * 100)}% confidence.`,
@@ -167,6 +181,9 @@ const Index = () => {
 
     } catch (error) {
       console.error('Error analyzing image online, falling back to offline:', error);
+      
+      // Reset processing state before switching to offline
+      setProcessingStage('uploading');
       
       // Fallback to offline analysis
       toast({
@@ -182,6 +199,8 @@ const Index = () => {
     setSelectedImage(null);
     setResult(null);
     setProcessingStage('uploading');
+    setIsProcessing(false);
+    setForceOffline(false);
   };
 
   return (
@@ -290,7 +309,7 @@ const Index = () => {
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Brain className="w-6 h-6 mr-3" />
-                    {!isOnline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
+                    {!isOnline || forceOffline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
                   </Button>
                   
                   {isOnline && !forceOffline && (
@@ -298,7 +317,6 @@ const Index = () => {
                       <Button 
                         onClick={() => {
                           setForceOffline(true);
-                          analyzeImage();
                         }}
                         variant="outline"
                         size="sm"
