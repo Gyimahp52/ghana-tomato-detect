@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Leaf, Droplets, Scissors, Microscope, ShieldCheck, DollarSign, MapPin, Clock, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TreatmentMethod } from '@/types/treatment';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface TreatmentRecommendationsProps {
   treatments: TreatmentMethod[];
 }
 
 const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ treatments }) => {
+  const { t } = useLanguage();
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentMethod | null>(null);
 
   const getTypeIcon = (type: string) => {
@@ -64,10 +67,10 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Leaf className="w-5 h-5 text-green-600" />
-          Comprehensive Treatment Options
+          {t('treatment.title')}
         </CardTitle>
         <p className="text-sm text-gray-600">
-          Multiple treatment approaches ranked by effectiveness, cost, and local availability
+          {t('treatment.subtitle')}
         </p>
       </CardHeader>
       <CardContent>
@@ -75,26 +78,26 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="organic" className="text-xs">
               <Leaf className="w-3 h-3 mr-1" />
-              Organic ({organicTreatments.length})
+              {t('treatment.organic')} ({organicTreatments.length})
             </TabsTrigger>
             <TabsTrigger value="cultural" className="text-xs">
               <Scissors className="w-3 h-3 mr-1" />
-              Cultural ({culturalTreatments.length})
+              {t('treatment.cultural')} ({culturalTreatments.length})
             </TabsTrigger>
             <TabsTrigger value="biological" className="text-xs">
               <Microscope className="w-3 h-3 mr-1" />
-              Biological ({biologicalTreatments.length})
+              {t('treatment.biological')} ({biologicalTreatments.length})
             </TabsTrigger>
             {chemicalTreatments.length > 0 && (
               <TabsTrigger value="chemical" className="text-xs">
                 <Droplets className="w-3 h-3 mr-1" />
-                Chemical ({chemicalTreatments.length})
+                {t('treatment.chemical')} ({chemicalTreatments.length})
               </TabsTrigger>
             )}
             {preventiveTreatments.length > 0 && (
               <TabsTrigger value="preventive" className="text-xs">
                 <ShieldCheck className="w-3 h-3 mr-1" />
-                Preventive ({preventiveTreatments.length})
+                {t('treatment.preventive')} ({preventiveTreatments.length})
               </TabsTrigger>
             )}
           </TabsList>
@@ -127,7 +130,7 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
                 {getTypeIcon(selectedTreatment.type)}
                 {selectedTreatment.name}
                 <Badge className={getTypeColor(selectedTreatment.type)}>
-                  {selectedTreatment.type}
+                  {t(`treatment.${selectedTreatment.type}`)}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -136,7 +139,7 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
               
               {selectedTreatment.ingredients && (
                 <div>
-                  <h4 className="font-semibold mb-2">Ingredients:</h4>
+                  <h4 className="font-semibold mb-2">{t('treatment.ingredients')}</h4>
                   <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
                     {selectedTreatment.ingredients.map((ingredient, index) => (
                       <li key={index}>{ingredient}</li>
@@ -146,7 +149,7 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
               )}
               
               <div>
-                <h4 className="font-semibold mb-2">Application:</h4>
+                <h4 className="font-semibold mb-2">{t('treatment.application')}</h4>
                 <p className="text-sm text-gray-700">{selectedTreatment.application}</p>
               </div>
               
@@ -157,18 +160,18 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
                 </div>
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-500" />
-                  <span>{selectedTreatment.effectiveness}% effective</span>
+                  <span>{selectedTreatment.effectiveness}% {t('treatment.effective')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className={`w-4 h-4 ${getCostColor(selectedTreatment.costLevel)}`} />
                   <span className={getCostColor(selectedTreatment.costLevel)}>
-                    {selectedTreatment.costLevel} cost
+                    {t(`treatment.${selectedTreatment.costLevel}`)} {t('treatment.cost')}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className={`w-4 h-4 ${getAvailabilityColor(selectedTreatment.localAvailability)}`} />
                   <span className={getAvailabilityColor(selectedTreatment.localAvailability)}>
-                    {selectedTreatment.localAvailability}
+                    {t(`treatment.${selectedTreatment.localAvailability}`)}
                   </span>
                 </div>
               </div>
@@ -184,6 +187,8 @@ const TreatmentGrid: React.FC<{
   treatments: TreatmentMethod[];
   onSelect: (treatment: TreatmentMethod) => void;
 }> = ({ treatments, onSelect }) => {
+  const { t } = useLanguage();
+  
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'organic': return 'border-green-200 hover:bg-green-50';
@@ -216,10 +221,10 @@ const TreatmentGrid: React.FC<{
               <span className="text-gray-500">{treatment.frequency}</span>
               <div className="flex gap-2">
                 <Badge variant="outline" className="text-xs">
-                  {treatment.costLevel} cost
+                  {t(`treatment.${treatment.costLevel}`)} {t('treatment.cost')}
                 </Badge>
                 <Badge variant="outline" className="text-xs">
-                  {treatment.localAvailability}
+                  {t(`treatment.${treatment.localAvailability}`)}
                 </Badge>
               </div>
             </div>

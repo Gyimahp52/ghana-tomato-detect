@@ -1,9 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSelector from '@/components/LanguageSelector';
 import ImageUpload from '@/components/ImageUpload';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
 import ResultsDisplay from '@/components/ResultsDisplay';
@@ -17,6 +18,7 @@ interface PredictionResult {
 }
 
 const Index = () => {
+  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStage, setProcessingStage] = useState<'uploading' | 'analyzing' | 'complete'>('uploading');
@@ -47,50 +49,50 @@ const Index = () => {
   const analyzeImageOffline = async () => {
     if (!selectedImage) return;
 
-    console.log('Starting offline analysis...');
+    console.log('Starting optimized offline analysis...');
     setIsProcessing(true);
     setProcessingStage('uploading');
 
     try {
-      // Import the offline detection service dynamically
+      // Dynamic import for better performance
       const { offlineDetectionService } = await import('@/services/offlineDetection');
       
-      // Simulate uploading stage
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Faster uploading simulation
+      await new Promise(resolve => setTimeout(resolve, 500));
       setProcessingStage('analyzing');
 
-      console.log('Running offline disease detection...');
+      console.log('Running optimized offline disease detection...');
       const offlineResult = await offlineDetectionService.detectDisease(selectedImage);
       
-      console.log('Offline analysis result:', offlineResult);
+      console.log('Optimized offline analysis result:', offlineResult);
 
-      // Simulate analysis completion
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Faster completion
+      await new Promise(resolve => setTimeout(resolve, 800));
       setProcessingStage('complete');
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 300));
 
       const processedResult = {
         ...offlineResult,
         offline: true
       };
 
-      console.log('Setting offline result:', processedResult);
+      console.log('Setting optimized offline result:', processedResult);
       setResult(processedResult);
       setIsProcessing(false);
 
       toast({
-        title: "Offline Analysis Complete",
-        description: `Disease detection completed offline with ${Math.round(offlineResult.confidence * 100)}% confidence.`,
+        title: t('toast.offline_complete'),
+        description: t('toast.offline_description').replace('{{confidence}}', Math.round(offlineResult.confidence * 100).toString()),
       });
 
     } catch (error) {
-      console.error('Error in offline analysis:', error);
+      console.error('Error in optimized offline analysis:', error);
       setIsProcessing(false);
       setProcessingStage('uploading');
       
       toast({
-        title: "Offline Analysis Failed",
-        description: "There was an error analyzing your image offline. Please try again.",
+        title: t('toast.offline_failed'),
+        description: t('toast.offline_failed_description'),
         variant: "destructive",
       });
     }
@@ -99,14 +101,14 @@ const Index = () => {
   const analyzeImage = async () => {
     if (!selectedImage) {
       toast({
-        title: "No Image Selected",
-        description: "Please select an image before analyzing.",
+        title: t('toast.no_image'),
+        description: t('toast.no_image_description'),
         variant: "destructive",
       });
       return;
     }
 
-    // Use offline analysis if offline or forced offline
+    // Use optimized offline analysis if offline or forced offline
     if (!isOnline || forceOffline) {
       await analyzeImageOffline();
       return;
@@ -150,13 +152,11 @@ const Index = () => {
       const data: PredictionResult = await response.json();
       console.log('Raw API Response data:', data);
 
-      // Validate the response
       if (!data || typeof data.label === 'undefined') {
         console.error('Invalid response structure:', data);
         throw new Error('Server returned invalid response format');
       }
 
-      // Use the label directly as returned by the API
       const processedResult = {
         ...data,
         confidence: data.confidence || data.probability || 0.8,
@@ -166,7 +166,6 @@ const Index = () => {
 
       console.log('Processed result:', processedResult);
 
-      // Simulate completion stage
       setProcessingStage('complete');
       await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -175,20 +174,18 @@ const Index = () => {
       setIsProcessing(false);
 
       toast({
-        title: "Online Analysis Complete",
-        description: `Disease detection completed with ${Math.round(processedResult.confidence * 100)}% confidence.`,
+        title: t('toast.online_complete'),
+        description: t('toast.online_description').replace('{{confidence}}', Math.round(processedResult.confidence * 100).toString()),
       });
 
     } catch (error) {
       console.error('Error analyzing image online, falling back to offline:', error);
       
-      // Reset processing state before switching to offline
       setProcessingStage('uploading');
       
-      // Fallback to offline analysis
       toast({
-        title: "Switching to Offline Mode",
-        description: "Server unavailable. Analyzing image offline...",
+        title: t('toast.switching_offline'),
+        description: t('toast.switching_description'),
       });
       
       await analyzeImageOffline();
@@ -205,7 +202,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
-      {/* Enhanced Header */}
+      {/* Enhanced Header with Language Selector */}
       <header className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-emerald-100 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -215,30 +212,33 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
-                  TomatoAI
+                  {t('header.title')}
                 </h1>
                 <p className="text-sm text-emerald-600 font-medium flex items-center gap-2">
-                  Advanced CNN Disease Detection
+                  {t('header.subtitle')}
                   {!isOnline && (
                     <Badge variant="outline" className="text-xs">
-                      Offline Mode
+                      {t('header.offline')}
                     </Badge>
                   )}
                 </p>
               </div>
             </div>
-            <div className="hidden md:flex items-center space-x-8 text-sm">
-              <div className="flex items-center space-x-2 text-emerald-700">
-                <Brain className="w-5 h-5" />
-                <span className="font-medium">AI Powered</span>
-              </div>
-              <div className="flex items-center space-x-2 text-emerald-700">
-                <Users className="w-5 h-5" />
-                <span className="font-medium">Organic Treatments</span>
-              </div>
-              <div className="flex items-center space-x-2 text-emerald-700">
-                <Globe className="w-5 h-5" />
-                <span className="font-medium">Works Offline</span>
+            <div className="flex items-center space-x-6">
+              <LanguageSelector />
+              <div className="hidden md:flex items-center space-x-8 text-sm">
+                <div className="flex items-center space-x-2 text-emerald-700">
+                  <Brain className="w-5 h-5" />
+                  <span className="font-medium">{t('header.ai_powered')}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-emerald-700">
+                  <Users className="w-5 h-5" />
+                  <span className="font-medium">{t('header.organic_treatments')}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-emerald-700">
+                  <Globe className="w-5 h-5" />
+                  <span className="font-medium">{t('header.works_offline')}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -251,22 +251,21 @@ const Index = () => {
           <div className="text-center mb-12 animate-fade-in">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-5xl font-bold text-gray-800 mb-6 leading-tight">
-                Detect Tomato Diseases
-                <span className="block text-emerald-600">Instantly with AI</span>
+                {t('main.title')}
+                <span className="block text-emerald-600">{t('main.subtitle')}</span>
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Upload a photo of your tomato plant and get instant AI-powered diagnosis with 
-                comprehensive organic and cultural treatment recommendations.
+                {t('main.description')}
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-sm">
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ Works Offline</span>
+                  <span className="text-emerald-700 font-medium">{t('main.works_offline')}</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ Organic Solutions</span>
+                  <span className="text-emerald-700 font-medium">{t('main.organic_solutions')}</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">✓ Multiple Treatment Options</span>
+                  <span className="text-emerald-700 font-medium">{t('main.multiple_treatments')}</span>
                 </div>
               </div>
             </div>
@@ -287,7 +286,7 @@ const Index = () => {
                   size="lg" 
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  Analyze Another Plant
+                  {t('button.analyze_another')}
                 </Button>
               </div>
             </div>
@@ -309,7 +308,7 @@ const Index = () => {
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Brain className="w-6 h-6 mr-3" />
-                    {!isOnline || forceOffline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
+                    {!isOnline || forceOffline ? t('button.analyze_offline') : t('button.analyze')}
                   </Button>
                   
                   {isOnline && !forceOffline && (
@@ -322,7 +321,7 @@ const Index = () => {
                         size="sm"
                         className="ml-4"
                       >
-                        Try Offline Mode
+                        {t('button.try_offline')}
                       </Button>
                     </div>
                   )}
@@ -382,13 +381,13 @@ const Index = () => {
               <div className="p-2 bg-white/20 rounded-lg">
                 <Leaf className="w-6 h-6" />
               </div>
-              <h4 className="text-xl font-bold">TomatoAI</h4>
+              <h4 className="text-xl font-bold">{t('footer.title')}</h4>
             </div>
             <p className="text-emerald-100 mb-4">
-              Comprehensive Offline Plant Disease Detection with Organic Treatment Solutions
+              {t('footer.description')}
             </p>
             <p className="text-emerald-200 text-sm">
-              &copy; 2025 TomatoAI Ghana - Empowering Farmers with Sustainable AI Technology
+              {t('footer.copyright')}
             </p>
           </div>
         </div>
