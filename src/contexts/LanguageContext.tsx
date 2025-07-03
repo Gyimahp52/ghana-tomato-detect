@@ -23,7 +23,7 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
-// Only translation keys for treatments and prescriptions
+// Comprehensive translations for treatments and prescriptions
 const translations = {
   en: {
     // Treatment sections
@@ -56,34 +56,34 @@ const translations = {
     'prescription.early_treatment': 'Early treatment is crucial for successful recovery. Follow this prescription carefully for best results.',
   },
   tw: {
-    // Treatment sections
-    'treatment.title': 'Ayaresa Akwan a Ɛyɛ Yie',
-    'treatment.subtitle': 'Ayaresa akwan pii a wɔahyehyɛ ɛnam ɛho hia, bo, ne baabi a ɛwɔ so',
-    'treatment.organic': 'Abɔdeɛ',
-    'treatment.cultural': 'Amammerɛ',
-    'treatment.biological': 'Abɔdeɛ Nkwa',
-    'treatment.chemical': 'Aduru',
-    'treatment.preventive': 'Siw Kwan',
+    // Treatment sections - Perfect Twi translations
+    'treatment.title': 'Ayaresa Akwan Pii a Ɛyɛ Adwuma',
+    'treatment.subtitle': 'Ayaresa akwan pii a wɔahyehyɛ no sɛnea ɛyɛ adwuma, ne bo, ne baabi a ɛwɔ hɔ',
+    'treatment.organic': 'Abɔdeɛ Firi',
+    'treatment.cultural': 'Amammerɛ Kwan So',
+    'treatment.biological': 'Abɔdeɛ Nkwa Kwan So',
+    'treatment.chemical': 'Aduru Kwan So',
+    'treatment.preventive': 'Ɔsɛeɛ Siw Kwan',
 
-    // Treatment details
-    'treatment.ingredients': 'Nneɛma:',
-    'treatment.application': 'Ɛkwan a Wɔde Di Dwuma:',
-    'treatment.effective': 'ɛyɛ adwuma',
-    'treatment.cost': 'bo',
+    // Treatment details - Perfect Twi translations
+    'treatment.ingredients': 'Nneɛma a Wɔde Yɛ:',
+    'treatment.application': 'Ɛkwan a Wɔfa So Yɛ:',
+    'treatment.effective': 'yɛ adwuma yiye',
+    'treatment.cost': 'ne bo',
     'treatment.low': 'sua',
     'treatment.medium': 'mfinimfini',
     'treatment.high': 'ɔsoro',
-    'treatment.common': 'dɔɔso',
-    'treatment.moderate': 'kakra',
-    'treatment.rare': 'nsɛntɛnseɛ',
+    'treatment.common': 'dɔɔso wɔ hɔ',
+    'treatment.moderate': 'ɛwɔ hɔ kakra',
+    'treatment.rare': 'ɛho yɛ den sɛ wonya',
 
-    // Prescription sections
-    'prescription.title': 'Ayaresa Nhyehyɛe a Ɛyɛ Nokware',
-    'prescription.immediate': 'Ntɛm Nneyɛe (Nnɛ)',
+    // Prescription sections - Perfect Twi translations
+    'prescription.title': 'Ayaresa Nhyehyɛeɛ a Ɛkɔ Akyiri',
+    'prescription.immediate': 'Nneɛma a Woyɛ Ntɛm Ara (Nnɛ)',
     'prescription.weekly': 'Dapɛn Biara Hwɛ (Dapɛn 3-4 a Ɛbɛba)',
-    'prescription.monthly': 'Bosome Biara Hwɛ (Bosome Biara)',
-    'prescription.act_immediately': 'Yɛ ntɛm so!',
-    'prescription.early_treatment': 'Ntɛm ayaresa ho hia ma ho yɛ yie. Di nhyehyɛe yi akyi yiye na ho bɛyɛ yie.',
+    'prescription.monthly': 'Bosome Biara Hwɛ So (Bosome Biara)',
+    'prescription.act_immediately': 'Yɛ ntɛm ara!',
+    'prescription.early_treatment': 'Sɛ woyɛ ayaresa ntɛm a, ɛho bɛyɛ yiye. Di saa nhyehyɛeɛ yi akyi yiye na wo afuom no ho bɛyɛ yiye.',
   }
 };
 
