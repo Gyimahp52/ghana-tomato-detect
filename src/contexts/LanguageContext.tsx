@@ -23,48 +23,9 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
+// Only translation keys for treatments and prescriptions
 const translations = {
   en: {
-    // Header
-    'header.title': 'TomatoAI',
-    'header.subtitle': 'Advanced CNN Disease Detection',
-    'header.offline': 'Offline Mode',
-    'header.ai_powered': 'AI Powered',
-    'header.organic_treatments': 'Organic Treatments',
-    'header.works_offline': 'Works Offline',
-
-    // Main content
-    'main.title': 'Detect Tomato Diseases',
-    'main.subtitle': 'Instantly with AI',
-    'main.description': 'Upload a photo of your tomato plant and get instant AI-powered diagnosis with comprehensive organic and cultural treatment recommendations.',
-    'main.works_offline': '✓ Works Offline',
-    'main.organic_solutions': '✓ Organic Solutions',
-    'main.multiple_treatments': '✓ Multiple Treatment Options',
-
-    // System information
-    'system.why_choose': 'Why Choose TomatoAI?',
-    'system.comprehensive_solutions': 'Comprehensive organic solutions that work online and offline',
-    'system.works_completely_offline': 'Works Completely Offline',
-    'system.offline_description': 'Advanced offline AI model that works without internet connection, ensuring you can diagnose diseases anytime, anywhere.',
-    'system.comprehensive_organic': 'Comprehensive Organic Solutions',
-    'system.organic_description': 'Multiple treatment options including organic, cultural, and biological methods - not just chemical fungicides.',
-    'system.local_solutions': 'Local Ghanaian Solutions',
-    'system.local_description': 'Treatments using locally available ingredients and methods specifically designed for Ghana\'s farming conditions.',
-
-    // Buttons
-    'button.analyze': 'Analyze Plant Health',
-    'button.analyze_offline': 'Analyze Plant Health (Offline)',
-    'button.try_offline': 'Try Offline Mode',
-    'button.analyze_another': 'Analyze Another Plant',
-
-    // Disease names
-    'disease.healthy': 'Healthy Plant',
-    'disease.bacterial_spot': 'Bacterial Spot',
-    'disease.early_blight': 'Early Blight',
-    'disease.late_blight': 'Late Blight',
-    'disease.leaf_mold': 'Leaf Mold',
-    'disease.general': 'Unhealthy Plant - General Disease',
-
     // Treatment sections
     'treatment.title': 'Comprehensive Treatment Options',
     'treatment.subtitle': 'Multiple treatment approaches ranked by effectiveness, cost, and local availability',
@@ -86,73 +47,15 @@ const translations = {
     'treatment.moderate': 'moderate',
     'treatment.rare': 'rare',
 
-    // Symptoms
-    'symptoms.title': 'Disease Symptoms',
-    
-    // Prevention
-    'prevention.title': 'Prevention Tips',
-    
-    // Farming tips
-    'farming.title': 'Ghana-Specific Farming Tips',
-    
-    // Footer
-    'footer.title': 'TomatoAI',
-    'footer.description': 'Comprehensive Offline Plant Disease Detection with Organic Treatment Solutions',
-    'footer.copyright': '© 2025 TomatoAI Ghana - Empowering Farmers with Sustainable AI Technology',
-
-    // Toast messages
-    'toast.offline_complete': 'Offline Analysis Complete',
-    'toast.offline_description': 'Disease detection completed offline with {{confidence}}% confidence.',
-    'toast.online_complete': 'Online Analysis Complete',
-    'toast.online_description': 'Disease detection completed with {{confidence}}% confidence.',
-    'toast.switching_offline': 'Switching to Offline Mode',
-    'toast.switching_description': 'Server unavailable. Analyzing image offline...',
-    'toast.no_image': 'No Image Selected',
-    'toast.no_image_description': 'Please select an image before analyzing.',
-    'toast.offline_failed': 'Offline Analysis Failed',
-    'toast.offline_failed_description': 'There was an error analyzing your image offline. Please try again.',
+    // Prescription sections
+    'prescription.title': 'Detailed Treatment Prescription',
+    'prescription.immediate': 'Immediate Actions (Today)',
+    'prescription.weekly': 'Weekly Care (Next 3-4 weeks)',
+    'prescription.monthly': 'Long-term Care (Monthly)',
+    'prescription.act_immediately': 'Act immediately!',
+    'prescription.early_treatment': 'Early treatment is crucial for successful recovery. Follow this prescription carefully for best results.',
   },
   tw: {
-    // Header
-    'header.title': 'TomatoAI',
-    'header.subtitle': 'AI Nhwehwɛmu a Ɛyɛ Den',
-    'header.offline': 'Offline Kwan',
-    'header.ai_powered': 'AI Tumi',
-    'header.organic_treatments': 'Abɔdeɛ Ayaresa',
-    'header.works_offline': 'Ɛyɛ Adwuma Offline',
-
-    // Main content
-    'main.title': 'Hu Ntomato Yareɛ',
-    'main.subtitle': 'Ntɛm so wɔ AI',
-    'main.description': 'Fa wo ntomato afuom mfonini to hɔ na nya AI nhwehwɛmu ntɛm so ne abɔdeɛ ayaresa akwan pii.',
-    'main.works_offline': '✓ Ɛyɛ Adwuma Offline',
-    'main.organic_solutions': '✓ Abɔdeɛ Ayaresa',
-    'main.multiple_treatments': '✓ Ayaresa Akwan Pii',
-
-    // System information
-    'system.why_choose': 'Adɛn nti na Wopaw TomatoAI?',
-    'system.comprehensive_solutions': 'Abɔdeɛ ayaresa akwan a ɛyɛ adwuma online ne offline',
-    'system.works_completely_offline': 'Ɛyɛ Adwuma Offline Koraa',
-    'system.offline_description': 'AI nhwehwɛmu a ɛnyɛ internet na ɛhia, na ɛma wotumi hu yareɛ bere biara, baabiara.',
-    'system.comprehensive_organic': 'Abɔdeɛ Ayaresa a Ɛyɛ Yie',
-    'system.organic_description': 'Ayaresa akwan pii te sɛ abɔdeɛ, amammerɛ, ne abɔdeɛ nkwa akwan - ɛnyɛ aduru nkutoo.',
-    'system.local_solutions': 'Ghana Ayaresa Akwan',
-    'system.local_description': 'Ayaresa a ɛde nneɛma a ɛwɔ Ghana ne akwan a ɛfata Ghana akuafo.',
-
-    // Buttons
-    'button.analyze': 'Hwehwɛ Afuom Ahoɔden',
-    'button.analyze_offline': 'Hwehwɛ Afuom Ahoɔden (Offline)',
-    'button.try_offline': 'Sɔ Offline Kwan Hwɛ',
-    'button.analyze_another': 'Hwehwɛ Afuom Foforɔ',
-
-    // Disease names
-    'disease.healthy': 'Afuom a Ɛyɛ',
-    'disease.bacterial_spot': 'Bacteria Nkekaho',
-    'disease.early_blight': 'Ntɛm Yareɛ',
-    'disease.late_blight': 'Akyiri Yareɛ',
-    'disease.leaf_mold': 'Nhaban Efi',
-    'disease.general': 'Afuom a Ɛnyɛ Yie - Yareɛ Amoa',
-
     // Treatment sections
     'treatment.title': 'Ayaresa Akwan a Ɛyɛ Yie',
     'treatment.subtitle': 'Ayaresa akwan pii a wɔahyehyɛ ɛnam ɛho hia, bo, ne baabi a ɛwɔ so',
@@ -174,31 +77,13 @@ const translations = {
     'treatment.moderate': 'kakra',
     'treatment.rare': 'nsɛntɛnseɛ',
 
-    // Symptoms
-    'symptoms.title': 'Yareɛ Nsɛnkyerɛnneɛ',
-    
-    // Prevention
-    'prevention.title': 'Siw Akwan',
-    
-    // Farming tips
-    'farming.title': 'Ghana Kuayɛ Nkyerɛkyerɛ',
-    
-    // Footer
-    'footer.title': 'TomatoAI',
-    'footer.description': 'Offline Afuom Yareɛ Nhwehwɛmu ne Abɔdeɛ Ayaresa Akwan',
-    'footer.copyright': '© 2025 TomatoAI Ghana - Ɛma Akuafo Tumi wɔ AI Mfiridwuma mu',
-
-    // Toast messages
-    'toast.offline_complete': 'Offline Nhwehwɛmu Awie',
-    'toast.offline_description': 'Yareɛ nhwehwɛmu awie offline wɔ {{confidence}}% gyidie mu.',
-    'toast.online_complete': 'Online Nhwehwɛmu Awie',
-    'toast.online_description': 'Yareɛ nhwehwɛmu awie wɔ {{confidence}}% gyidie mu.',
-    'toast.switching_offline': 'Ɛrekɔ Offline Kwan So',
-    'toast.switching_description': 'Server nni hɔ. Ɛrehwehwɛ mfonini offline...',
-    'toast.no_image': 'Mfonini Biara Nni Hɔ',
-    'toast.no_image_description': 'Yɛsrɛ wo fa mfonini ansa na woahwehwɛ.',
-    'toast.offline_failed': 'Offline Nhwehwɛmu Ansi',
-    'toast.offline_failed_description': 'Ɛyɛɛ mfomsoɔ bere a na ɛrehwehwɛ wo mfonini offline. Yɛsrɛ wo sɔ hwɛ bio.',
+    // Prescription sections
+    'prescription.title': 'Ayaresa Nhyehyɛe a Ɛyɛ Nokware',
+    'prescription.immediate': 'Ntɛm Nneyɛe (Nnɛ)',
+    'prescription.weekly': 'Dapɛn Biara Hwɛ (Dapɛn 3-4 a Ɛbɛba)',
+    'prescription.monthly': 'Bosome Biara Hwɛ (Bosome Biara)',
+    'prescription.act_immediately': 'Yɛ ntɛm so!',
+    'prescription.early_treatment': 'Ntɛm ayaresa ho hia ma ho yɛ yie. Di nhyehyɛe yi akyi yiye na ho bɛyɛ yie.',
   }
 };
 

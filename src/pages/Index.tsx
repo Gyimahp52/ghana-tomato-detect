@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Leaf, Brain, Users, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/hooks/use-toast';
-import { useLanguage } from '@/contexts/LanguageContext';
 import LanguageSelector from '@/components/LanguageSelector';
 import ImageUpload from '@/components/ImageUpload';
 import ProcessingAnimation from '@/components/ProcessingAnimation';
@@ -18,7 +18,6 @@ interface PredictionResult {
 }
 
 const Index = () => {
-  const { t } = useLanguage();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStage, setProcessingStage] = useState<'uploading' | 'analyzing' | 'complete'>('uploading');
@@ -81,8 +80,8 @@ const Index = () => {
       setIsProcessing(false);
 
       toast({
-        title: t('toast.offline_complete'),
-        description: t('toast.offline_description').replace('{{confidence}}', Math.round(offlineResult.confidence * 100).toString()),
+        title: 'Offline Analysis Complete',
+        description: `Disease detection completed offline with ${Math.round(offlineResult.confidence * 100)}% confidence.`,
       });
 
     } catch (error) {
@@ -91,8 +90,8 @@ const Index = () => {
       setProcessingStage('uploading');
       
       toast({
-        title: t('toast.offline_failed'),
-        description: t('toast.offline_failed_description'),
+        title: 'Offline Analysis Failed',
+        description: 'There was an error analyzing your image offline. Please try again.',
         variant: "destructive",
       });
     }
@@ -101,8 +100,8 @@ const Index = () => {
   const analyzeImage = async () => {
     if (!selectedImage) {
       toast({
-        title: t('toast.no_image'),
-        description: t('toast.no_image_description'),
+        title: 'No Image Selected',
+        description: 'Please select an image before analyzing.',
         variant: "destructive",
       });
       return;
@@ -174,8 +173,8 @@ const Index = () => {
       setIsProcessing(false);
 
       toast({
-        title: t('toast.online_complete'),
-        description: t('toast.online_description').replace('{{confidence}}', Math.round(processedResult.confidence * 100).toString()),
+        title: 'Online Analysis Complete',
+        description: `Disease detection completed with ${Math.round(processedResult.confidence * 100)}% confidence.`,
       });
 
     } catch (error) {
@@ -184,8 +183,8 @@ const Index = () => {
       setProcessingStage('uploading');
       
       toast({
-        title: t('toast.switching_offline'),
-        description: t('toast.switching_description'),
+        title: 'Switching to Offline Mode',
+        description: 'Server unavailable. Analyzing image offline...',
       });
       
       await analyzeImageOffline();
@@ -212,13 +211,13 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
-                  {t('header.title')}
+                  TomatoAI
                 </h1>
                 <p className="text-sm text-emerald-600 font-medium flex items-center gap-2">
-                  {t('header.subtitle')}
+                  Advanced CNN Disease Detection
                   {!isOnline && (
                     <Badge variant="outline" className="text-xs">
-                      {t('header.offline')}
+                      Offline Mode
                     </Badge>
                   )}
                 </p>
@@ -229,15 +228,15 @@ const Index = () => {
               <div className="hidden md:flex items-center space-x-8 text-sm">
                 <div className="flex items-center space-x-2 text-emerald-700">
                   <Brain className="w-5 h-5" />
-                  <span className="font-medium">{t('header.ai_powered')}</span>
+                  <span className="font-medium">AI Powered</span>
                 </div>
                 <div className="flex items-center space-x-2 text-emerald-700">
                   <Users className="w-5 h-5" />
-                  <span className="font-medium">{t('header.organic_treatments')}</span>
+                  <span className="font-medium">Organic Treatments</span>
                 </div>
                 <div className="flex items-center space-x-2 text-emerald-700">
                   <Globe className="w-5 h-5" />
-                  <span className="font-medium">{t('header.works_offline')}</span>
+                  <span className="font-medium">Works Offline</span>
                 </div>
               </div>
             </div>
@@ -251,21 +250,21 @@ const Index = () => {
           <div className="text-center mb-12 animate-fade-in">
             <div className="max-w-4xl mx-auto">
               <h2 className="text-5xl font-bold text-gray-800 mb-6 leading-tight">
-                {t('main.title')}
-                <span className="block text-emerald-600">{t('main.subtitle')}</span>
+                Detect Tomato Diseases
+                <span className="block text-emerald-600">Instantly with AI</span>
               </h2>
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                {t('main.description')}
+                Upload a photo of your tomato plant and get instant AI-powered diagnosis with comprehensive organic and cultural treatment recommendations.
               </p>
               <div className="flex flex-wrap justify-center gap-4 text-sm">
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">{t('main.works_offline')}</span>
+                  <span className="text-emerald-700 font-medium">✓ Works Offline</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">{t('main.organic_solutions')}</span>
+                  <span className="text-emerald-700 font-medium">✓ Organic Solutions</span>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-emerald-200">
-                  <span className="text-emerald-700 font-medium">{t('main.multiple_treatments')}</span>
+                  <span className="text-emerald-700 font-medium">✓ Multiple Treatment Options</span>
                 </div>
               </div>
             </div>
@@ -286,7 +285,7 @@ const Index = () => {
                   size="lg" 
                   className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  {t('button.analyze_another')}
+                  Analyze Another Plant
                 </Button>
               </div>
             </div>
@@ -308,7 +307,7 @@ const Index = () => {
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Brain className="w-6 h-6 mr-3" />
-                    {!isOnline || forceOffline ? t('button.analyze_offline') : t('button.analyze')}
+                    {!isOnline || forceOffline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
                   </Button>
                   
                   {isOnline && !forceOffline && (
@@ -321,7 +320,7 @@ const Index = () => {
                         size="sm"
                         className="ml-4"
                       >
-                        {t('button.try_offline')}
+                        Try Offline Mode
                       </Button>
                     </div>
                   )}
@@ -335,17 +334,17 @@ const Index = () => {
         {!result && !isProcessing && (
           <div className="mt-20 animate-fade-in">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">{t('system.why_choose')}</h3>
-              <p className="text-lg text-gray-600">{t('system.comprehensive_solutions')}</p>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI?</h3>
+              <p className="text-lg text-gray-600">Comprehensive organic solutions that work online and offline</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-emerald-100">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.works_completely_offline')}</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Works Completely Offline</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  {t('system.offline_description')}
+                  Advanced offline AI model that works without internet connection, ensuring you can diagnose diseases anytime, anywhere.
                 </p>
               </div>
               
@@ -353,9 +352,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Leaf className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.comprehensive_organic')}</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Comprehensive Organic Solutions</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  {t('system.organic_description')}
+                  Multiple treatment options including organic, cultural, and biological methods - not just chemical fungicides.
                 </p>
               </div>
               
@@ -363,9 +362,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.local_solutions')}</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">Local Ghanaian Solutions</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  {t('system.local_description')}
+                  Treatments using locally available ingredients and methods specifically designed for Ghana's farming conditions.
                 </p>
               </div>
             </div>
@@ -381,13 +380,13 @@ const Index = () => {
               <div className="p-2 bg-white/20 rounded-lg">
                 <Leaf className="w-6 h-6" />
               </div>
-              <h4 className="text-xl font-bold">{t('footer.title')}</h4>
+              <h4 className="text-xl font-bold">TomatoAI</h4>
             </div>
             <p className="text-emerald-100 mb-4">
-              {t('footer.description')}
+              Comprehensive Offline Plant Disease Detection with Organic Treatment Solutions
             </p>
             <p className="text-emerald-200 text-sm">
-              {t('footer.copyright')}
+              © 2025 TomatoAI Ghana - Empowering Farmers with Sustainable AI Technology
             </p>
           </div>
         </div>

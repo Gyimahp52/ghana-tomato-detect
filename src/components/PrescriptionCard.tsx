@@ -3,6 +3,7 @@ import React from 'react';
 import { Pill, Clock, Calendar, Leaf, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface PrescriptionCardProps {
   prescription: {
@@ -13,20 +14,21 @@ interface PrescriptionCardProps {
 }
 
 const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescription }) => {
+  const { t } = useLanguage();
+  
   return (
     <Card className="border-l-4 border-l-blue-500">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Pill className="w-5 h-5 text-blue-600" />
-          Detailed Treatment Prescription
+          {t('prescription.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <Alert className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Act immediately!</strong> Early treatment is crucial for successful recovery. 
-            Follow this prescription carefully for best results.
+            <strong>{t('prescription.act_immediately')}</strong> {t('prescription.early_treatment')}
           </AlertDescription>
         </Alert>
 
@@ -37,7 +39,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescription }) => 
               <div className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 1
               </div>
-              <h4 className="font-semibold text-red-700">Immediate Actions (Today)</h4>
+              <h4 className="font-semibold text-red-700">{t('prescription.immediate')}</h4>
             </div>
             {prescription.immediate.map((action, index) => (
               <div key={index} className="flex items-start gap-3 p-3 bg-red-50 rounded-lg border-l-4 border-red-200">
@@ -53,7 +55,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescription }) => 
               <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 2
               </div>
-              <h4 className="font-semibold text-orange-700">Weekly Care (Next 3-4 weeks)</h4>
+              <h4 className="font-semibold text-orange-700">{t('prescription.weekly')}</h4>
             </div>
             {prescription.weekly.map((action, index) => (
               <div key={index} className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-200">
@@ -69,7 +71,7 @@ const PrescriptionCard: React.FC<PrescriptionCardProps> = ({ prescription }) => 
               <div className="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                 3
               </div>
-              <h4 className="font-semibold text-green-700">Long-term Care (Monthly)</h4>
+              <h4 className="font-semibold text-green-700">{t('prescription.monthly')}</h4>
             </div>
             {prescription.monthly.map((action, index) => (
               <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-200">
