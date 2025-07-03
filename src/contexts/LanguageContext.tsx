@@ -93,6 +93,7 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   // Add debug logging
   useEffect(() => {
     console.log('Language changed to:', language);
+    console.log('Available translations for', language, ':', Object.keys(translations[language]));
   }, [language]);
 
   const t = (key: string): string => {
@@ -109,12 +110,18 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   };
 
   const handleSetLanguage = (lang: Language) => {
-    console.log('Setting language to:', lang);
+    console.log('Setting language to:', lang, 'from:', language);
     setLanguage(lang);
   };
 
+  const contextValue = React.useMemo(() => ({
+    language,
+    setLanguage: handleSetLanguage,
+    t
+  }), [language]);
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
+    <LanguageContext.Provider value={contextValue}>
       {children}
     </LanguageContext.Provider>
   );

@@ -8,9 +8,12 @@ const LanguageSelector: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
   const handleLanguageChange = (newLanguage: 'en' | 'tw') => {
-    console.log('Language selector clicked:', newLanguage);
+    console.log('Language selector clicked:', newLanguage, 'current:', language);
     setLanguage(newLanguage);
+    console.log('Language selector after setState:', language);
   };
+
+  console.log('LanguageSelector render - current language:', language);
 
   return (
     <div className="flex items-center gap-2">
