@@ -331,21 +331,21 @@ const Index = () => {
           )}
         </div>
 
-        {/* Enhanced Info Section */}
+        {/* Enhanced Info Section with System Title */}
         {!result && !isProcessing && (
           <div className="mt-20 animate-fade-in">
             <div className="text-center mb-12">
-              <h3 className="text-3xl font-bold text-gray-800 mb-4">Why Choose TomatoAI?</h3>
-              <p className="text-lg text-gray-600">Comprehensive organic solutions that work online and offline</p>
+              <h3 className="text-3xl font-bold text-gray-800 mb-4">{t('system.why_choose')}</h3>
+              <p className="text-lg text-gray-600">{t('system.comprehensive_solutions')}</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
               <div className="group bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-emerald-100">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Works Completely Offline</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.works_completely_offline')}</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Advanced offline AI model that works without internet connection, ensuring you can diagnose diseases anytime, anywhere.
+                  {t('system.offline_description')}
                 </p>
               </div>
               
@@ -353,9 +353,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Leaf className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Comprehensive Organic Solutions</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.comprehensive_organic')}</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Multiple treatment options including organic, cultural, and biological methods - not just chemical fungicides.
+                  {t('system.organic_description')}
                 </p>
               </div>
               
@@ -363,9 +363,9 @@ const Index = () => {
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                   <Users className="w-8 h-8 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-4">Local Ghanaian Solutions</h4>
+                <h4 className="text-xl font-bold text-gray-800 mb-4">{t('system.local_solutions')}</h4>
                 <p className="text-gray-600 leading-relaxed">
-                  Treatments using locally available ingredients and methods specifically designed for Ghana's farming conditions.
+                  {t('system.local_description')}
                 </p>
               </div>
             </div>

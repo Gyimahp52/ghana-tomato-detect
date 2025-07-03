@@ -7,6 +7,11 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const LanguageSelector: React.FC = () => {
   const { language, setLanguage } = useLanguage();
 
+  const handleLanguageChange = (newLanguage: 'en' | 'tw') => {
+    console.log('Language selector clicked:', newLanguage);
+    setLanguage(newLanguage);
+  };
+
   return (
     <div className="flex items-center gap-2">
       <Globe className="w-4 h-4 text-emerald-600" />
@@ -14,7 +19,7 @@ const LanguageSelector: React.FC = () => {
         <Button
           variant={language === 'en' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => setLanguage('en')}
+          onClick={() => handleLanguageChange('en')}
           className={`px-3 py-1 text-xs rounded-none ${
             language === 'en' 
               ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
@@ -26,7 +31,7 @@ const LanguageSelector: React.FC = () => {
         <Button
           variant={language === 'tw' ? 'default' : 'ghost'}
           size="sm"
-          onClick={() => setLanguage('tw')}
+          onClick={() => handleLanguageChange('tw')}
           className={`px-3 py-1 text-xs rounded-none ${
             language === 'tw' 
               ? 'bg-emerald-600 text-white hover:bg-emerald-700' 

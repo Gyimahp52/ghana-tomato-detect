@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 export type Language = 'en' | 'tw';
 
@@ -40,6 +40,16 @@ const translations = {
     'main.works_offline': '✓ Works Offline',
     'main.organic_solutions': '✓ Organic Solutions',
     'main.multiple_treatments': '✓ Multiple Treatment Options',
+
+    // System information
+    'system.why_choose': 'Why Choose TomatoAI?',
+    'system.comprehensive_solutions': 'Comprehensive organic solutions that work online and offline',
+    'system.works_completely_offline': 'Works Completely Offline',
+    'system.offline_description': 'Advanced offline AI model that works without internet connection, ensuring you can diagnose diseases anytime, anywhere.',
+    'system.comprehensive_organic': 'Comprehensive Organic Solutions',
+    'system.organic_description': 'Multiple treatment options including organic, cultural, and biological methods - not just chemical fungicides.',
+    'system.local_solutions': 'Local Ghanaian Solutions',
+    'system.local_description': 'Treatments using locally available ingredients and methods specifically designed for Ghana\'s farming conditions.',
 
     // Buttons
     'button.analyze': 'Analyze Plant Health',
@@ -119,6 +129,16 @@ const translations = {
     'main.organic_solutions': '✓ Abɔdeɛ Ayaresa',
     'main.multiple_treatments': '✓ Ayaresa Akwan Pii',
 
+    // System information
+    'system.why_choose': 'Adɛn nti na Wopaw TomatoAI?',
+    'system.comprehensive_solutions': 'Abɔdeɛ ayaresa akwan a ɛyɛ adwuma online ne offline',
+    'system.works_completely_offline': 'Ɛyɛ Adwuma Offline Koraa',
+    'system.offline_description': 'AI nhwehwɛmu a ɛnyɛ internet na ɛhia, na ɛma wotumi hu yareɛ bere biara, baabiara.',
+    'system.comprehensive_organic': 'Abɔdeɛ Ayaresa a Ɛyɛ Yie',
+    'system.organic_description': 'Ayaresa akwan pii te sɛ abɔdeɛ, amammerɛ, ne abɔdeɛ nkwa akwan - ɛnyɛ aduru nkutoo.',
+    'system.local_solutions': 'Ghana Ayaresa Akwan',
+    'system.local_description': 'Ayaresa a ɛde nneɛma a ɛwɔ Ghana ne akwan a ɛfata Ghana akuafo.',
+
     // Buttons
     'button.analyze': 'Hwehwɛ Afuom Ahoɔden',
     'button.analyze_offline': 'Hwehwɛ Afuom Ahoɔden (Offline)',
@@ -185,6 +205,11 @@ const translations = {
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
   const [language, setLanguage] = useState<Language>('en');
 
+  // Add debug logging
+  useEffect(() => {
+    console.log('Language changed to:', language);
+  }, [language]);
+
   const t = (key: string): string => {
     const keys = key.split('.');
     let translation: any = translations[language];
@@ -193,11 +218,18 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       translation = translation?.[k];
     }
     
-    return translation || key;
+    const result = translation || key;
+    console.log(`Translation for "${key}" in "${language}":`, result);
+    return result;
+  };
+
+  const handleSetLanguage = (lang: Language) => {
+    console.log('Setting language to:', lang);
+    setLanguage(lang);
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage: handleSetLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
