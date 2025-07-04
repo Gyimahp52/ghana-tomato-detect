@@ -54,6 +54,20 @@ const translations = {
     'prescription.monthly': 'Long-term Care (Monthly)',
     'prescription.act_immediately': 'Act immediately!',
     'prescription.early_treatment': 'Early treatment is crucial for successful recovery. Follow this prescription carefully for best results.',
+
+    // Common treatment names and descriptions
+    'treatment.neem_oil': 'Neem Oil Spray',
+    'treatment.neem_oil_desc': 'Natural antifungal spray made from neem tree extract',
+    'treatment.soap_water': 'Soap Water Solution',
+    'treatment.soap_water_desc': 'Mild soap solution that helps control fungal growth',
+    'treatment.baking_soda': 'Baking Soda Spray',
+    'treatment.baking_soda_desc': 'Alkaline spray that prevents fungal spore germination',
+    'treatment.remove_affected': 'Remove Affected Leaves',
+    'treatment.remove_affected_desc': 'Physical removal of diseased plant parts to prevent spread',
+    'treatment.improve_air': 'Improve Air Circulation',
+    'treatment.improve_air_desc': 'Increase spacing between plants to reduce humidity',
+    'treatment.water_base': 'Water at Plant Base',
+    'treatment.water_base_desc': 'Avoid overhead watering to keep leaves dry',
   },
   tw: {
     // Treatment sections - Perfect Twi translations
@@ -84,6 +98,20 @@ const translations = {
     'prescription.monthly': 'Bosome Biara Hwɛ So (Bosome Biara)',
     'prescription.act_immediately': 'Yɛ ntɛm ara!',
     'prescription.early_treatment': 'Sɛ woyɛ ayaresa ntɛm a, ɛho bɛyɛ yiye. Di saa nhyehyɛeɛ yi akyi yiye na wo afuom no ho bɛyɛ yiye.',
+
+    // Common treatment names and descriptions in Twi
+    'treatment.neem_oil': 'Neem Nnua Nsuo Aduru',
+    'treatment.neem_oil_desc': 'Abɔdeɛ aduru a ɛko tia mmoawa a efi neem nnua mu',
+    'treatment.soap_water': 'Samina ne Nsuo Aduru',
+    'treatment.soap_water_desc': 'Samina aduru a ɛko tia mmoawa a ɛsɛe afuom',
+    'treatment.baking_soda': 'Baking Soda Aduru',
+    'treatment.baking_soda_desc': 'Aduru a ɛsiw mmoawa sɛ ɛnnya baabi ntete',
+    'treatment.remove_affected': 'Yi Nhaban a Ayare Ako So',
+    'treatment.remove_affected_desc': 'Yi nhaban a ayare ako so no fi hɔ sɛnea ɛrentrɛw',
+    'treatment.improve_air': 'Ma Mframa Nkɔ Afuom No So Yiye',
+    'treatment.improve_air_desc': 'Ma ntam wɔ afuom no ntam na mframa nkɔ so yiye',
+    'treatment.water_base': 'Gugu Nsuo Wɔ Afuom No Ase',
+    'treatment.water_base_desc': 'Nngugu nsuo wɔ nhaban no so na ɛnyɛ fɔkyɛ',
   }
 };
 

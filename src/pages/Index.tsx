@@ -42,13 +42,14 @@ const Index = () => {
   const handleImageSelect = (file: File | null) => {
     setSelectedImage(file);
     setResult(null);
+    // Reset forceOffline when selecting a new image
     setForceOffline(false);
   };
 
   const analyzeImageOffline = async () => {
     if (!selectedImage) return;
 
-    console.log('Starting optimized offline analysis...');
+    console.log('Starting offline analysis...');
     setIsProcessing(true);
     setProcessingStage('uploading');
 
@@ -60,10 +61,10 @@ const Index = () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       setProcessingStage('analyzing');
 
-      console.log('Running optimized offline disease detection...');
+      console.log('Running offline disease detection...');
       const offlineResult = await offlineDetectionService.detectDisease(selectedImage);
       
-      console.log('Optimized offline analysis result:', offlineResult);
+      console.log('Offline analysis result:', offlineResult);
 
       // Faster completion
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -75,7 +76,7 @@ const Index = () => {
         offline: true
       };
 
-      console.log('Setting optimized offline result:', processedResult);
+      console.log('Setting offline result:', processedResult);
       setResult(processedResult);
       setIsProcessing(false);
 
@@ -85,7 +86,7 @@ const Index = () => {
       });
 
     } catch (error) {
-      console.error('Error in optimized offline analysis:', error);
+      console.error('Error in offline analysis:', error);
       setIsProcessing(false);
       setProcessingStage('uploading');
       
@@ -107,12 +108,16 @@ const Index = () => {
       return;
     }
 
-    // Use optimized offline analysis if offline or forced offline
-    if (!isOnline || forceOffline) {
+    // Check if we should use offline mode
+    const shouldUseOffline = !isOnline || forceOffline;
+    console.log('Analysis decision - isOnline:', isOnline, 'forceOffline:', forceOffline, 'shouldUseOffline:', shouldUseOffline);
+
+    if (shouldUseOffline) {
       await analyzeImageOffline();
       return;
     }
 
+    // Proceed with online analysis
     setIsProcessing(true);
     setProcessingStage('uploading');
 
@@ -307,13 +312,14 @@ const Index = () => {
                     className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-10 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   >
                     <Brain className="w-6 h-6 mr-3" />
-                    {!isOnline || forceOffline ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
+                    {shouldUseOfflineMode() ? 'Analyze Plant Health (Offline)' : 'Analyze Plant Health'}
                   </Button>
                   
                   {isOnline && !forceOffline && (
                     <div>
                       <Button 
                         onClick={() => {
+                          console.log('Force offline button clicked');
                           setForceOffline(true);
                         }}
                         variant="outline"
@@ -393,6 +399,11 @@ const Index = () => {
       </footer>
     </div>
   );
+
+  // Helper function to determine if offline mode should be used
+  function shouldUseOfflineMode() {
+    return !isOnline || forceOffline;
+  }
 };
 
 export default Index;

@@ -7,14 +7,20 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TreatmentMethod } from '@/types/treatment';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { translateTreatment } from '@/services/translationService';
 
 interface TreatmentRecommendationsProps {
   treatments: TreatmentMethod[];
 }
 
 const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ treatments }) => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentMethod | null>(null);
+
+  // Translate treatments based on current language
+  const translatedTreatments = treatments.map(treatment => 
+    translateTreatment(treatment, language)
+  );
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -56,11 +62,11 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
     }
   };
 
-  const organicTreatments = treatments.filter(t => t.type === 'organic');
-  const culturalTreatments = treatments.filter(t => t.type === 'cultural');
-  const biologicalTreatments = treatments.filter(t => t.type === 'biological');
-  const chemicalTreatments = treatments.filter(t => t.type === 'chemical');
-  const preventiveTreatments = treatments.filter(t => t.type === 'preventive');
+  const organicTreatments = translatedTreatments.filter(t => t.type === 'organic');
+  const culturalTreatments = translatedTreatments.filter(t => t.type === 'cultural');
+  const biologicalTreatments = translatedTreatments.filter(t => t.type === 'biological');
+  const chemicalTreatments = translatedTreatments.filter(t => t.type === 'chemical');
+  const preventiveTreatments = translatedTreatments.filter(t => t.type === 'preventive');
 
   return (
     <Card className="border-l-4 border-l-green-500">
