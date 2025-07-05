@@ -16,6 +16,10 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
   const { t, language } = useLanguage();
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentMethod | null>(null);
 
+  // Add debug logging for translation
+  console.log('TreatmentRecommendations - Current language:', language);
+  console.log('TreatmentRecommendations - Translation test:', t('treatment.title'));
+
   // Translate treatments based on current language
   const translatedTreatments = treatments.map(treatment => 
     translateTreatment(treatment, language)
@@ -23,6 +27,12 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
 
   // Check if this is for a healthy plant (preventive treatments only)
   const isHealthyPlant = treatments.length === 1 && treatments[0].type === 'preventive';
+
+  const titleText = isHealthyPlant ? t('healthy.title') : t('treatment.title');
+  const subtitleText = isHealthyPlant ? t('healthy.subtitle') : t('treatment.subtitle');
+
+  console.log('TreatmentRecommendations - Title text:', titleText);
+  console.log('TreatmentRecommendations - Subtitle text:', subtitleText);
 
   return (
     <Card className="border-l-4 border-l-green-500">
@@ -33,10 +43,10 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
           ) : (
             <Leaf className="w-5 h-5 text-green-600" />
           )}
-          {isHealthyPlant ? t('healthy.title') : t('treatment.title')}
+          {titleText}
         </CardTitle>
         <p className="text-sm text-gray-600">
-          {isHealthyPlant ? t('healthy.subtitle') : t('treatment.subtitle')}
+          {subtitleText}
         </p>
       </CardHeader>
       <CardContent>

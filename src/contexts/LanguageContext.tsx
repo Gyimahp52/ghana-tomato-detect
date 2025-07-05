@@ -137,16 +137,27 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   }, [language]);
 
   const t = (key: string): string => {
-    const keys = key.split('.');
-    let translation: any = translations[language];
+    console.log(`Translating key: "${key}" in language: "${language}"`);
     
-    for (const k of keys) {
-      translation = translation?.[k];
+    // Direct key lookup in translations
+    const translation = translations[language][key as keyof typeof translations[typeof language]];
+    
+    if (translation) {
+      console.log(`Found translation for "${key}":`, translation);
+      return translation;
     }
     
-    const result = translation || key;
-    console.log(`Translation for "${key}" in "${language}":`, result);
-    return result;
+    // Fallback to nested key lookup for complex keys
+    const keys = key.split('.');
+    let result: any = translations[language];
+    
+    for (const k of keys) {
+      result = result?.[k];
+    }
+    
+    const finalResult = result || key;
+    console.log(`Final translation for "${key}" in "${language}":`, finalResult);
+    return finalResult;
   };
 
   const handleSetLanguage = (lang: Language) => {
