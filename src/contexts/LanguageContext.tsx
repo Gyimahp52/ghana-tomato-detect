@@ -55,6 +55,12 @@ const translations = {
     'prescription.act_immediately': 'Act immediately!',
     'prescription.early_treatment': 'Early treatment is crucial for successful recovery. Follow this prescription carefully for best results.',
 
+    // Healthy plant sections
+    'healthy.title': 'Plant Health Status',
+    'healthy.subtitle': 'Your plant is healthy - maintain current care routine',
+    'healthy.care_title': 'Maintenance Care',
+    'healthy.frequency': 'Frequency:',
+
     // Common treatment names and descriptions
     'treatment.neem_oil': 'Neem Oil Spray',
     'treatment.neem_oil_desc': 'Natural antifungal spray made from neem tree extract',
@@ -98,6 +104,12 @@ const translations = {
     'prescription.monthly': 'Bosome Biara Hwɛ So (Bosome Biara)',
     'prescription.act_immediately': 'Yɛ ntɛm ara!',
     'prescription.early_treatment': 'Sɛ woyɛ ayaresa ntɛm a, ɛho bɛyɛ yiye. Di saa nhyehyɛeɛ yi akyi yiye na wo afuom no ho bɛyɛ yiye.',
+
+    // Healthy plant sections - Twi translations
+    'healthy.title': 'Afuom no Apɔmuden Ho Tebea',
+    'healthy.subtitle': 'Wo afuom no ho yɛ - kɔ so hwɛ no sɛnea woyɛ no',
+    'healthy.care_title': 'Ɛkwan a Wɔfa So Hwɛ So',
+    'healthy.frequency': 'Mpɛn Dodoɔ:',
 
     // Common treatment names and descriptions in Twi
     'treatment.neem_oil': 'Neem Nnua Nsuo Aduru',

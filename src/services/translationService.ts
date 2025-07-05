@@ -38,6 +38,12 @@ const treatmentTranslations = {
     'Avoid overhead watering to keep leaves dry': 'Avoid overhead watering to keep leaves dry',
     'Water at soil level using drip irrigation or soaker hose': 'Water at soil level using drip irrigation or soaker hose',
     'Water early morning to allow soil to dry during day': 'Water early morning to allow soil to dry during day',
+
+    // Healthy Plant Treatments
+    'Continued Care': 'Continued Care',
+    'Maintain optimal growing conditions': 'Maintain optimal growing conditions',
+    'Continue regular watering and fertilization schedule': 'Continue regular watering and fertilization schedule',
+    'Daily monitoring': 'Daily monitoring',
   },
   tw: {
     // Neem Oil Treatment
@@ -73,6 +79,12 @@ const treatmentTranslations = {
     'Avoid overhead watering to keep leaves dry': 'Nngugu nsuo wɔ nhaban no so na ɛnyɛ fɔkyɛ',
     'Water at soil level using drip irrigation or soaker hose': 'Gugu nsuo wɔ fam no so fa pipe a nsuo fi mu ba brɛooɔ anaa hose',
     'Water early morning to allow soil to dry during day': 'Gugu nsuo anɔpatutuutu na fam no wo awiaberɛ',
+
+    // Healthy Plant Treatments
+    'Continued Care': 'Kɔ So Hwɛ So',
+    'Maintain optimal growing conditions': 'Ma tebea a ɛyɛ papa ma afuom nyini yiye no nkɔ so',
+    'Continue regular watering and fertilization schedule': 'Kɔ so gugu nsuo ne ma adwadze sɛnea woyɛ daa no',
+    'Daily monitoring': 'Da biara hwɛ so',
   }
 };
 
@@ -86,6 +98,7 @@ export const translateTreatment = (treatment: TreatmentMethod, language: 'en' | 
     name: translateTreatmentContent(treatment.name, language),
     description: translateTreatmentContent(treatment.description, language),
     application: translateTreatmentContent(treatment.application, language),
+    frequency: translateTreatmentContent(treatment.frequency, language),
     ingredients: treatment.ingredients?.map(ingredient => 
       translateTreatmentContent(ingredient, language)
     )
