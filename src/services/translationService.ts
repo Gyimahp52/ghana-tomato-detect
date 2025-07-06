@@ -1,8 +1,7 @@
-
 import { TreatmentMethod } from '@/types/treatment';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { enhancedTranslationService } from './enhancedTranslationService';
 
-// Translation mappings for treatment content
+// Keep existing manual translations as fallback
 const treatmentTranslations = {
   en: {
     // Neem Oil Treatment
@@ -89,18 +88,42 @@ const treatmentTranslations = {
 };
 
 export const translateTreatmentContent = (content: string, language: 'en' | 'tw'): string => {
-  return treatmentTranslations[language][content] || content;
+  // Try manual translation first for exact matches
+  const manualTranslation = treatmentTranslations[language][content];
+  if (manualTranslation) {
+    return manualTranslation;
+  }
+  
+  // Fallback to Google Translate for dynamic content
+  if (language === 'tw') {
+    // For now, return the original content - the enhanced service will handle async translation
+    console.log('Content needs translation:', content);
+  }
+  
+  return content;
 };
 
-export const translateTreatment = (treatment: TreatmentMethod, language: 'en' | 'tw'): TreatmentMethod => {
-  return {
-    ...treatment,
-    name: translateTreatmentContent(treatment.name, language),
-    description: translateTreatmentContent(treatment.description, language),
-    application: translateTreatmentContent(treatment.application, language),
-    frequency: translateTreatmentContent(treatment.frequency, language),
-    ingredients: treatment.ingredients?.map(ingredient => 
-      translateTreatmentContent(ingredient, language)
-    )
-  };
+export const translateTreatment = async (treatment: TreatmentMethod, language: 'en' | 'tw'): Promise<TreatmentMethod> => {
+  if (language === 'en') {
+    return treatment;
+  }
+
+  try {
+    // Use the enhanced translation service with Google Translate
+    return await enhancedTranslationService.translateTreatment(treatment, language);
+  } catch (error) {
+    console.error('Enhanced translation failed, using fallback:', error);
+    
+    // Fallback to manual translations
+    return {
+      ...treatment,
+      name: translateTreatmentContent(treatment.name, language),
+      description: translateTreatmentContent(treatment.description, language),
+      application: translateTreatmentContent(treatment.application, language),
+      frequency: translateTreatmentContent(treatment.frequency, language),
+      ingredients: treatment.ingredients?.map(ingredient => 
+        translateTreatmentContent(ingredient, language)
+      )
+    };
+  }
 };

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Leaf, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TreatmentMethod } from '@/types/treatment';
@@ -15,15 +15,38 @@ interface TreatmentRecommendationsProps {
 const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ treatments }) => {
   const { t, language } = useLanguage();
   const [selectedTreatment, setSelectedTreatment] = useState<TreatmentMethod | null>(null);
+  const [translatedTreatments, setTranslatedTreatments] = useState<TreatmentMethod[]>(treatments);
+  const [isTranslating, setIsTranslating] = useState(false);
 
   // Add debug logging for translation
   console.log('TreatmentRecommendations - Current language:', language);
   console.log('TreatmentRecommendations - Translation test:', t('treatment.title'));
 
-  // Translate treatments based on current language
-  const translatedTreatments = treatments.map(treatment => 
-    translateTreatment(treatment, language)
-  );
+  // Effect to handle async translation when language changes
+  useEffect(() => {
+    const translateTreatments = async () => {
+      if (language === 'en') {
+        setTranslatedTreatments(treatments);
+        return;
+      }
+
+      setIsTranslating(true);
+      try {
+        const translated = await Promise.all(
+          treatments.map(treatment => translateTreatment(treatment, language))
+        );
+        setTranslatedTreatments(translated);
+        console.log('Treatments translated to:', language, translated);
+      } catch (error) {
+        console.error('Translation error:', error);
+        setTranslatedTreatments(treatments); // Fallback to original
+      } finally {
+        setIsTranslating(false);
+      }
+    };
+
+    translateTreatments();
+  }, [treatments, language]);
 
   // Check if this is for a healthy plant (preventive treatments only)
   const isHealthyPlant = treatments.length === 1 && treatments[0].type === 'preventive';
@@ -33,6 +56,19 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
 
   console.log('TreatmentRecommendations - Title text:', titleText);
   console.log('TreatmentRecommendations - Subtitle text:', subtitleText);
+
+  if (isTranslating && language === 'tw') {
+    return (
+      <Card className="border-l-4 border-l-green-500">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
+            <span className="text-gray-600">Translating to Twi...</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-l-4 border-l-green-500">
