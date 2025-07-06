@@ -43,6 +43,7 @@ export class EnhancedTranslationService {
       return this.cache.get(text)!;
     }
 
+    // Use the browser-compatible fallback translation service
     const translation = await googleTranslateService.translateTreatmentContent(text);
     this.cache.set(text, translation);
     return translation;
