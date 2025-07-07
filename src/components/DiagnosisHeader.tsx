@@ -46,49 +46,49 @@ const DiagnosisHeader: React.FC<DiagnosisHeaderProps> = ({ result, selectedImage
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            AI Diagnosis Complete
+      <CardHeader className="pb-3 sm:pb-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+          <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2 flex-wrap">
+            <span>AI Diagnosis Complete</span>
             {result.offline ? (
-              <Badge variant="outline" className="text-sm px-3 py-1 flex items-center gap-1">
+              <Badge variant="outline" className="text-xs sm:text-sm px-2 sm:px-3 py-1 flex items-center gap-1">
                 <WifiOff className="w-3 h-3" />
                 Offline Analysis
               </Badge>
             ) : (
-              <Badge variant="outline" className="text-sm px-3 py-1 flex items-center gap-1">
+              <Badge variant="outline" className="text-xs sm:text-sm px-2 sm:px-3 py-1 flex items-center gap-1">
                 <Wifi className="w-3 h-3" />
                 Online Analysis
               </Badge>
             )}
           </CardTitle>
-          <Badge variant="outline" className="text-lg px-3 py-1">
+          <Badge variant="outline" className="text-base sm:text-lg px-2 sm:px-3 py-1 self-start sm:self-auto">
             {confidencePercentage}% Confidence
           </Badge>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="order-2 lg:order-1">
             <img
               src={URL.createObjectURL(selectedImage)}
               alt="Analyzed tomato plant"
-              className="w-full h-64 object-cover rounded-lg shadow-md"
+              className="w-full h-48 sm:h-56 lg:h-64 object-cover rounded-lg shadow-md"
             />
           </div>
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
+          <div className="space-y-3 sm:space-y-4 order-1 lg:order-2">
+            <div className="flex items-start sm:items-center gap-3">
               {getSeverityIcon(disease.severity)}
-              <div>
-                <h3 className="text-xl font-semibold">{disease.name}</h3>
+              <div className="flex-1">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">{disease.name}</h3>
                 <Badge className={`${getSeverityColor(disease.severity)} border-0`}>
                   {disease.severity.charAt(0).toUpperCase() + disease.severity.slice(1)}
                 </Badge>
               </div>
             </div>
-            <p className="text-gray-600 leading-relaxed">{disease.description}</p>
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{disease.description}</p>
             <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-blue-800">
+              <p className="text-xs sm:text-sm text-blue-800">
                 <strong>Expected Recovery:</strong> {disease.expectedRecovery}
               </p>
             </div>

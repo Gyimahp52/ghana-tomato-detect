@@ -11,17 +11,17 @@ const PreventionCard: React.FC<PreventionCardProps> = ({ preventionTips }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <CheckCircle className="w-5 h-5 text-green-600" />
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
           Prevention for Future Crops
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid lg:grid-cols-2 gap-3 sm:gap-4">
           {preventionTips.map((tip, index) => (
-            <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <p className="text-gray-700">{tip}</p>
+            <div key={index} className="flex items-start gap-2 sm:gap-3 p-3 bg-green-50 rounded-lg">
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <p className="text-sm sm:text-base text-gray-700 flex-1">{tip}</p>
             </div>
           ))}
         </div>

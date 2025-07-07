@@ -65,7 +65,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
   console.log('Disease key:', diseaseKey, 'Found disease:', !!expandedDiseaseInfo[diseaseKey], 'Using:', disease.name);
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-6">
+    <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-6">
       {/* Header with image and main result */}
       <DiagnosisHeader 
         result={result} 

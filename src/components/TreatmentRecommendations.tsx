@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Leaf, Heart } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -60,10 +59,10 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
   if (isTranslating && language === 'tw') {
     return (
       <Card className="border-l-4 border-l-green-500">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <div className="flex items-center justify-center space-x-2">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
-            <span className="text-gray-600">Translating to Twi...</span>
+            <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-green-600"></div>
+            <span className="text-sm sm:text-base text-gray-600">Translating to Twi...</span>
           </div>
         </CardContent>
       </Card>
@@ -73,29 +72,29 @@ const TreatmentRecommendations: React.FC<TreatmentRecommendationsProps> = ({ tre
   return (
     <Card className="border-l-4 border-l-green-500">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
           {isHealthyPlant ? (
-            <Heart className="w-5 h-5 text-green-600" />
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
           ) : (
-            <Leaf className="w-5 h-5 text-green-600" />
+            <Leaf className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
           )}
           {titleText}
         </CardTitle>
-        <p className="text-sm text-gray-600">
+        <p className="text-xs sm:text-sm text-gray-600">
           {subtitleText}
         </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 sm:px-6">
         {isHealthyPlant ? (
           // Special layout for healthy plants
           <div className="space-y-4">
-            <h3 className="font-semibold text-green-700">{t('healthy.care_title')}</h3>
+            <h3 className="font-semibold text-green-700 text-sm sm:text-base">{t('healthy.care_title')}</h3>
             {translatedTreatments.map((treatment, index) => (
               <Card key={index} className="bg-green-50 border-green-200">
-                <CardContent className="p-4">
-                  <h4 className="font-semibold text-green-800 mb-2">{treatment.name}</h4>
-                  <p className="text-sm text-gray-700 mb-2">{treatment.description}</p>
-                  <div className="text-sm text-gray-600">
+                <CardContent className="p-3 sm:p-4">
+                  <h4 className="font-semibold text-green-800 mb-2 text-sm sm:text-base">{treatment.name}</h4>
+                  <p className="text-xs sm:text-sm text-gray-700 mb-2">{treatment.description}</p>
+                  <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                     <p><strong>{t('treatment.application')}</strong> {treatment.application}</p>
                     <p><strong>{t('healthy.frequency')}</strong> {treatment.frequency}</p>
                   </div>

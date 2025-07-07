@@ -11,17 +11,17 @@ const SymptomsCard: React.FC<SymptomsCardProps> = ({ symptoms }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Leaf className="w-5 h-5 text-green-600" />
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <Leaf className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
           Identified Symptoms
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ul className="grid md:grid-cols-2 gap-2">
+        <ul className="grid sm:grid-cols-2 gap-2 sm:gap-3">
           {symptoms.map((symptom, index) => (
-            <li key={index} className="flex items-center gap-2 text-gray-700">
-              <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-              {symptom}
+            <li key={index} className="flex items-start gap-2 sm:gap-3 text-sm sm:text-base text-gray-700">
+              <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+              <span className="flex-1">{symptom}</span>
             </li>
           ))}
         </ul>
