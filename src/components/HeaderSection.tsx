@@ -19,7 +19,7 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ isOnline }) => {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-emerald-700 to-teal-700 bg-clip-text text-transparent">
-                TomatoAI
+                Asenso.AI
               </h1>
               <p className="text-xs sm:text-sm text-emerald-600 font-medium flex items-center gap-1 sm:gap-2">
                 <span className="hidden sm:inline">Advanced CNN Disease Detection</span>

@@ -11,13 +11,13 @@ const FooterSection: React.FC = () => {
             <div className="p-2 bg-white/20 rounded-lg">
               <Leaf className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h4 className="text-lg sm:text-xl font-bold">TomatoAI</h4>
+            <h4 className="text-lg sm:text-xl font-bold">Asenso.AI</h4>
           </div>
           <p className="text-emerald-100 mb-4 text-sm sm:text-base px-4 sm:px-0">
             Comprehensive Offline Plant Disease Detection with Organic Treatment Solutions
           </p>
           <p className="text-emerald-200 text-xs sm:text-sm px-4 sm:px-0">
-            © 2025 TomatoAI Ghana - Empowering Farmers with Sustainable AI Technology
+            © 2025 Asenso.AI Ghana - Empowering Farmers with Sustainable AI Technology
           </p>
         </div>
       </div>

@@ -95,7 +95,7 @@ const GeminiDescriptionCard: React.FC<GeminiDescriptionCardProps> = ({ descripti
           </div>
         </CardTitle>
         <p className="text-xs sm:text-sm text-gray-600">
-          Detailed analysis powered by Google's Gemini AI model
+          Detailed analysis powered by Asenso.AI model
         </p>
       </CardHeader>
       <CardContent className="px-4 sm:px-6 space-y-4">
