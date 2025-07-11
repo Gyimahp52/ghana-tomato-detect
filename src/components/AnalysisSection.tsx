@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,6 +11,7 @@ interface PredictionResult {
   confidence: number;
   image_path: string;
   offline?: boolean;
+  gemini_description?: string;
 }
 
 interface AnalysisSectionProps {

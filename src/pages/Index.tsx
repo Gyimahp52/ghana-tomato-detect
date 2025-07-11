@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from '@/hooks/use-toast';
 import HeaderSection from '@/components/HeaderSection';
@@ -13,6 +12,7 @@ interface PredictionResult {
   confidence: number;
   image_path: string;
   offline?: boolean;
+  gemini_description?: string;
 }
 
 const Index = () => {

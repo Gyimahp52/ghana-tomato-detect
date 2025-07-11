@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DiagnosisHeader from './DiagnosisHeader';
 import OfflineNotice from './OfflineNotice';
@@ -7,6 +6,7 @@ import PreventionCard from './PreventionCard';
 import FarmingTipsCard from './FarmingTipsCard';
 import TreatmentRecommendations from './TreatmentRecommendations';
 import ConsultationNotice from './ConsultationNotice';
+import GeminiDescriptionCard from './GeminiDescriptionCard';
 import { expandedDiseaseInfo } from '@/data/diseases';
 
 interface PredictionResult {
@@ -15,6 +15,7 @@ interface PredictionResult {
   confidence: number;
   image_path: string;
   offline?: boolean;
+  gemini_description?: string;
 }
 
 interface ResultsDisplayProps {
@@ -75,6 +76,11 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
 
       {/* Offline Detection Notice */}
       <OfflineNotice isOffline={!!result.offline} />
+
+      {/* Gemini AI Description */}
+      {result.gemini_description && (
+        <GeminiDescriptionCard description={result.gemini_description} />
+      )}
 
       {/* Comprehensive Treatment Recommendations */}
       {disease.severity !== 'healthy' && (
