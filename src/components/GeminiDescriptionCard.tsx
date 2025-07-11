@@ -90,7 +90,7 @@ const GeminiDescriptionCard: React.FC<GeminiDescriptionCardProps> = ({ descripti
             <span>AI Analysis Report</span>
             <Badge variant="outline" className="text-xs px-2 py-1 flex items-center gap-1 bg-purple-100 text-purple-700 border-purple-300">
               <Sparkles className="w-3 h-3" />
-              Gemini AI
+              Asenso.AI
             </Badge>
           </div>
         </CardTitle>
