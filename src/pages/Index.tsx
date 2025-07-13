@@ -181,20 +181,38 @@ const Index = () => {
         throw new Error('Server returned non-JSON response');
       }
 
-      const data: PredictionResult = await response.json();
+      const data = await response.json();
       console.log('Raw API Response data:', data);
 
-      if (!data || typeof data.label === 'undefined') {
+      // Handle new API response format
+      let processedResult: PredictionResult;
+      
+      if (data.health_status && data.diseases_detected) {
+        // New API format
+        const diseaseLabel = data.diseases_detected && data.diseases_detected.length > 0 
+          ? `tomatoe-${data.diseases_detected[0].replace(/\s+/g, '-').toLowerCase()}`
+          : data.health_status === 'diseased' ? 'tomatoe-not-healthy' : 'tomatoe-healthy';
+          
+        processedResult = {
+          label: diseaseLabel,
+          confidence: data.confidence_score || 0.8,
+          probability: data.confidence_score || 0.8,
+          image_path: 'online_analysis',
+          offline: false,
+          gemini_description: data.additional_notes || ''
+        };
+      } else if (data.label) {
+        // Old API format (fallback)
+        processedResult = {
+          ...data,
+          confidence: data.confidence || data.probability || 0.8,
+          probability: data.probability || data.confidence || 0.8,
+          offline: false
+        };
+      } else {
         console.error('Invalid response structure:', data);
         throw new Error('Server returned invalid response format');
       }
-
-      const processedResult = {
-        ...data,
-        confidence: data.confidence || data.probability || 0.8,
-        probability: data.probability || data.confidence || 0.8,
-        offline: false
-      };
 
       console.log('Processed result:', processedResult);
 
