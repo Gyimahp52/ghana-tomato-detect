@@ -59,7 +59,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
       disease = expandedDiseaseInfo['tomatoe-leaf-mold'];
     } else {
       // Final fallback to general not healthy
-      disease = expandedDiseaseInfo['tomaoe-not-healthy'];
+      disease = expandedDiseaseInfo['tomaote-not-healthy'];
     }
   }
 
