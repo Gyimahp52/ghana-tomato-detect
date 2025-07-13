@@ -6,6 +6,7 @@ import { bacterialSpotData } from './bacterialSpot';
 import { earlyBlightData } from './earlyBlight';
 import { lateBlightData } from './lateBlight';
 import { leafMoldData } from './leafMold';
+import { notTomatoData } from './notTomato';
 
 export const expandedDiseaseInfo: Record<string, DiseaseInfo> = {
   'tomatoe-healthy': healthyPlantData,
@@ -13,7 +14,8 @@ export const expandedDiseaseInfo: Record<string, DiseaseInfo> = {
   'tomatoe-bacterial-spot': bacterialSpotData,
   'tomatoe-early-blight': earlyBlightData,
   'tomatoe-late-blight': lateBlightData,
-  'tomatoe-leaf-mold': leafMoldData
+  'tomatoe-leaf-mold': leafMoldData,
+  'not-tomato': notTomatoData
 };
 
 // Re-export types for convenience

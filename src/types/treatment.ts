@@ -13,7 +13,7 @@ export interface TreatmentMethod {
 
 export interface DiseaseInfo {
   name: string;
-  severity: 'healthy' | 'mild' | 'moderate' | 'severe';
+  severity: 'healthy' | 'mild' | 'moderate' | 'severe' | 'not_applicable';
   description: string;
   symptoms: string[];
   treatments: TreatmentMethod[];

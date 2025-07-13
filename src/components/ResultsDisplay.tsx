@@ -33,7 +33,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
   const getDiseaseInfo = () => {
     // Handle non-tomato images
     if (result.is_tomato_leaf === 'not_tomato') {
-      return expandedDiseaseInfo['tomaote-not-healthy']; // Use as fallback for display
+      return expandedDiseaseInfo['not-tomato'];
     }
 
     // Handle healthy plants
@@ -88,7 +88,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }
       )}
 
       {/* Comprehensive Treatment Recommendations */}
-      {disease.severity !== 'healthy' && (
+      {disease.severity !== 'healthy' && disease.severity !== 'not_applicable' && (
         <TreatmentRecommendations treatments={disease.treatments} />
       )}
 

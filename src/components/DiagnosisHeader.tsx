@@ -36,6 +36,7 @@ const DiagnosisHeader: React.FC<DiagnosisHeaderProps> = ({ result, selectedImage
       case 'mild': return 'text-yellow-600 bg-yellow-100';
       case 'moderate': return 'text-orange-600 bg-orange-100';
       case 'severe': return 'text-red-600 bg-red-100';
+      case 'not_applicable': return 'text-blue-600 bg-blue-100';
       default: return 'text-gray-600 bg-gray-100';
     }
   };
@@ -46,6 +47,7 @@ const DiagnosisHeader: React.FC<DiagnosisHeaderProps> = ({ result, selectedImage
       case 'mild': return <Info className="w-5 h-5" />;
       case 'moderate': return <AlertTriangle className="w-5 h-5" />;
       case 'severe': return <AlertCircle className="w-5 h-5" />;
+      case 'not_applicable': return <Info className="w-5 h-5" />;
       default: return <Info className="w-5 h-5" />;
     }
   };
@@ -88,7 +90,7 @@ const DiagnosisHeader: React.FC<DiagnosisHeaderProps> = ({ result, selectedImage
               <div className="flex-1">
                 <h3 className="text-lg sm:text-xl font-semibold mb-2">{disease.name}</h3>
                 <Badge className={`${getSeverityColor(disease.severity)} border-0`}>
-                  {disease.severity.charAt(0).toUpperCase() + disease.severity.slice(1)}
+                  {disease.severity === 'not_applicable' ? 'Not Applicable' : disease.severity.charAt(0).toUpperCase() + disease.severity.slice(1)}
                 </Badge>
               </div>
             </div>
