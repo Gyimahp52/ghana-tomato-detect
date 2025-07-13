@@ -6,11 +6,17 @@ import { Badge } from '@/components/ui/badge';
 
 interface DiagnosisHeaderProps {
   result: {
-    label: string;
-    probability: number;
-    confidence: number;
-    image_path: string;
+    is_tomato_leaf: string;
+    confidence_score: number;
+    health_status: string;
+    diseases_detected: string[];
+    symptoms_observed: string[];
+    severity_level: string | null;
+    treatment_recommendations: string[];
+    prevention_tips: string[];
+    additional_notes: string;
     offline?: boolean;
+    gemini_description?: string;
   };
   selectedImage: File;
   disease: {
@@ -22,7 +28,7 @@ interface DiagnosisHeaderProps {
 }
 
 const DiagnosisHeader: React.FC<DiagnosisHeaderProps> = ({ result, selectedImage, disease }) => {
-  const confidencePercentage = Math.round(result.confidence * 100);
+  const confidencePercentage = Math.round(result.confidence_score * 100);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {

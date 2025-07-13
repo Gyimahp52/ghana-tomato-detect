@@ -10,10 +10,15 @@ import GeminiDescriptionCard from './GeminiDescriptionCard';
 import { expandedDiseaseInfo } from '@/data/diseases';
 
 interface PredictionResult {
-  label: string;
-  probability: number;
-  confidence: number;
-  image_path: string;
+  is_tomato_leaf: string;
+  confidence_score: number;
+  health_status: string;
+  diseases_detected: string[];
+  symptoms_observed: string[];
+  severity_level: string | null;
+  treatment_recommendations: string[];
+  prevention_tips: string[];
+  additional_notes: string;
   offline?: boolean;
   gemini_description?: string;
 }
@@ -24,46 +29,46 @@ interface ResultsDisplayProps {
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, selectedImage }) => {
-  // Normalize the disease label to match our disease keys
-  const normalizeLabel = (label: string): string => {
-    // Handle the API's inconsistent spelling of "tomaote" vs "tomatoe"
-    let normalized = label.toLowerCase().replace(/[^a-z-]/g, '');
-    
-    // Fix the spelling inconsistency
-    if (normalized.startsWith('tomaote')) {
-      normalized = normalized.replace('tomaote', 'tomatoe');
+  // Determine disease info based on health status and detected diseases
+  const getDiseaseInfo = () => {
+    // Handle non-tomato images
+    if (result.is_tomato_leaf === 'not_tomato') {
+      return expandedDiseaseInfo['tomaote-not-healthy']; // Use as fallback for display
     }
-    
-    console.log('Normalizing label:', label, 'to:', normalized);
-    return normalized;
+
+    // Handle healthy plants
+    if (result.health_status === 'healthy') {
+      return expandedDiseaseInfo['tomatoe-healthy'];
+    }
+
+    // Handle diseased/stressed plants based on detected diseases
+    if (result.diseases_detected && result.diseases_detected.length > 0) {
+      const primaryDisease = result.diseases_detected[0];
+      
+      switch (primaryDisease) {
+        case 'early_blight':
+          return expandedDiseaseInfo['tomatoe-early-blight'];
+        case 'late_blight':
+          return expandedDiseaseInfo['tomatoe-late-blight'];
+        case 'bacterial_spot':
+          return expandedDiseaseInfo['tomatoe-bacterial-spot'];
+        case 'septoria_leaf_spot':
+        case 'leaf_mold':
+          return expandedDiseaseInfo['tomatoe-leaf-mold'];
+        case 'nutrient_deficiency':
+        case 'other':
+        default:
+          return expandedDiseaseInfo['tomaote-not-healthy'];
+      }
+    }
+
+    // Default fallback for stressed or unclear cases
+    return expandedDiseaseInfo['tomaote-not-healthy'];
   };
 
-  const diseaseKey = normalizeLabel(result.label);
-  let disease = expandedDiseaseInfo[diseaseKey];
+  const disease = getDiseaseInfo();
   
-  // If we don't have specific disease info, fall back based on label content
-  if (!disease) {
-    console.log('Disease not found for key:', diseaseKey, 'Available keys:', Object.keys(expandedDiseaseInfo));
-    
-    if (diseaseKey.includes('not-healthy') || diseaseKey.includes('unhealthy')) {
-      disease = expandedDiseaseInfo['tomaote-not-healthy'];
-    } else if (diseaseKey.includes('healthy')) {
-      disease = expandedDiseaseInfo['tomatoe-healthy'];
-    } else if (diseaseKey.includes('bacterial') || diseaseKey.includes('spot')) {
-      disease = expandedDiseaseInfo['tomatoe-bacterial-spot'];
-    } else if (diseaseKey.includes('early') && diseaseKey.includes('blight')) {
-      disease = expandedDiseaseInfo['tomatoe-early-blight'];
-    } else if (diseaseKey.includes('late') && diseaseKey.includes('blight')) {
-      disease = expandedDiseaseInfo['tomatoe-late-blight'];
-    } else if (diseaseKey.includes('leaf') && diseaseKey.includes('mold')) {
-      disease = expandedDiseaseInfo['tomatoe-leaf-mold'];
-    } else {
-      // Final fallback to general not healthy
-      disease = expandedDiseaseInfo['tomaote-not-healthy'];
-    }
-  }
-
-  console.log('Disease key:', diseaseKey, 'Found disease:', !!expandedDiseaseInfo[diseaseKey], 'Using:', disease.name);
+  console.log('Health status:', result.health_status, 'Diseases detected:', result.diseases_detected, 'Using disease info:', disease.name);
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-4 sm:space-y-6">

@@ -6,10 +6,15 @@ import ProcessingAnimation from '@/components/ProcessingAnimation';
 import ResultsDisplay from '@/components/ResultsDisplay';
 
 interface PredictionResult {
-  label: string;
-  probability: number;
-  confidence: number;
-  image_path: string;
+  is_tomato_leaf: string;
+  confidence_score: number;
+  health_status: string;
+  diseases_detected: string[];
+  symptoms_observed: string[];
+  severity_level: string | null;
+  treatment_recommendations: string[];
+  prevention_tips: string[];
+  additional_notes: string;
   offline?: boolean;
   gemini_description?: string;
 }

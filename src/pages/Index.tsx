@@ -7,10 +7,15 @@ import InfoSection from '@/components/InfoSection';
 import FooterSection from '@/components/FooterSection';
 
 interface PredictionResult {
-  label: string;
-  probability: number;
-  confidence: number;
-  image_path: string;
+  is_tomato_leaf: string;
+  confidence_score: number;
+  health_status: string;
+  diseases_detected: string[];
+  symptoms_observed: string[];
+  severity_level: string | null;
+  treatment_recommendations: string[];
+  prevention_tips: string[];
+  additional_notes: string;
   offline?: boolean;
   gemini_description?: string;
 }
@@ -84,8 +89,16 @@ const Index = () => {
       setProcessingStage('complete');
       await new Promise(resolve => setTimeout(resolve, 300));
 
-      const processedResult = {
-        ...offlineResult,
+      const processedResult: PredictionResult = {
+        is_tomato_leaf: 'tomato',
+        confidence_score: offlineResult.confidence || 0.8,
+        health_status: offlineResult.label?.toLowerCase().includes('healthy') ? 'healthy' : 'diseased',
+        diseases_detected: offlineResult.label?.toLowerCase().includes('healthy') ? [] : ['other'],
+        symptoms_observed: offlineResult.label?.toLowerCase().includes('healthy') ? [] : ['detected symptoms'],
+        severity_level: offlineResult.label?.toLowerCase().includes('healthy') ? null : 'moderate',
+        treatment_recommendations: [],
+        prevention_tips: [],
+        additional_notes: `Offline analysis: ${offlineResult.label || 'Analysis completed'}`,
         offline: true
       };
 
@@ -95,7 +108,7 @@ const Index = () => {
 
       toast({
         title: 'Offline Analysis Complete',
-        description: `Disease detection completed offline with ${Math.round(offlineResult.confidence * 100)}% confidence.`,
+        description: `Disease detection completed offline with ${Math.round(processedResult.confidence_score * 100)}% confidence.`,
       });
 
     } catch (error) {
@@ -185,34 +198,19 @@ const Index = () => {
       console.log('Raw API Response data:', data);
 
       // Handle new API response format
-      let processedResult: PredictionResult;
-      
-      if (data.health_status && data.diseases_detected) {
-        // New API format
-        const diseaseLabel = data.diseases_detected && data.diseases_detected.length > 0 
-          ? `tomatoe-${data.diseases_detected[0].replace(/\s+/g, '-').toLowerCase()}`
-          : data.health_status === 'diseased' ? 'tomatoe-not-healthy' : 'tomatoe-healthy';
-          
-        processedResult = {
-          label: diseaseLabel,
-          confidence: data.confidence_score || 0.8,
-          probability: data.confidence_score || 0.8,
-          image_path: 'online_analysis',
-          offline: false,
-          gemini_description: data.additional_notes || ''
-        };
-      } else if (data.label) {
-        // Old API format (fallback)
-        processedResult = {
-          ...data,
-          confidence: data.confidence || data.probability || 0.8,
-          probability: data.probability || data.confidence || 0.8,
-          offline: false
-        };
-      } else {
-        console.error('Invalid response structure:', data);
-        throw new Error('Server returned invalid response format');
-      }
+      const processedResult: PredictionResult = {
+        is_tomato_leaf: data.is_tomato_leaf || 'tomato',
+        confidence_score: data.confidence_score || 0.8,
+        health_status: data.health_status || 'diseased',
+        diseases_detected: data.diseases_detected || ['other'],
+        symptoms_observed: data.symptoms_observed || [],
+        severity_level: data.severity_level || 'moderate',
+        treatment_recommendations: data.treatment_recommendations || [],
+        prevention_tips: data.prevention_tips || [],
+        additional_notes: data.additional_notes || '',
+        offline: false,
+        gemini_description: data.additional_notes || ''
+      };
 
       console.log('Processed result:', processedResult);
 
@@ -225,7 +223,7 @@ const Index = () => {
 
       toast({
         title: 'Online Analysis Complete',
-        description: `Disease detection completed with ${Math.round(processedResult.confidence * 100)}% confidence.`,
+        description: `Disease detection completed with ${Math.round(processedResult.confidence_score * 100)}% confidence.`,
       });
 
     } catch (error) {
