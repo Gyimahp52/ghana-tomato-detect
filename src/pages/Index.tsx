@@ -90,16 +90,17 @@ const Index = () => {
       await new Promise(resolve => setTimeout(resolve, 300));
 
       const processedResult: PredictionResult = {
-        is_tomato_leaf: 'tomato',
-        confidence_score: offlineResult.confidence || 0.8,
-        health_status: offlineResult.label?.toLowerCase().includes('healthy') ? 'healthy' : 'diseased',
-        diseases_detected: offlineResult.label?.toLowerCase().includes('healthy') ? [] : ['other'],
-        symptoms_observed: offlineResult.label?.toLowerCase().includes('healthy') ? [] : ['detected symptoms'],
-        severity_level: offlineResult.label?.toLowerCase().includes('healthy') ? null : 'moderate',
-        treatment_recommendations: [],
-        prevention_tips: [],
-        additional_notes: `Offline analysis: ${offlineResult.label || 'Analysis completed'}`,
-        offline: true
+        is_tomato_leaf: offlineResult.is_tomato_leaf,
+        confidence_score: offlineResult.confidence_score,
+        health_status: offlineResult.health_status,
+        diseases_detected: offlineResult.diseases_detected,
+        symptoms_observed: offlineResult.symptoms_observed,
+        severity_level: offlineResult.severity_level,
+        treatment_recommendations: offlineResult.treatment_recommendations,
+        prevention_tips: offlineResult.prevention_tips,
+        additional_notes: offlineResult.additional_notes,
+        offline: true,
+        gemini_description: offlineResult.gemini_description
       };
 
       console.log('Setting offline result:', processedResult);
