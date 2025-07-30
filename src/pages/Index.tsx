@@ -28,40 +28,78 @@ const Index = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [forceOffline, setForceOffline] = useState(false);
 
-  // Monitor online/offline status
+  // Monitor online/offline status with debounce
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+    let debounceTimer: NodeJS.Timeout;
+    
+    const handleOnline = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        console.log('Browser reports online');
+        setIsOnline(true);
+      }, 1000); // 1 second debounce
+    };
+    
+    const handleOffline = () => {
+      clearTimeout(debounceTimer);
+      console.log('Browser reports offline');
+      setIsOnline(false);
+    };
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
     return () => {
+      clearTimeout(debounceTimer);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
+
+  const checkInternetConnectivity = async (retries = 2, delay = 1000): Promise<boolean> => {
+    // If browser reports offline, don't even try
+    if (!navigator.onLine) {
+      console.log('Browser reports offline, skipping connectivity check');
+      return false;
+    }
+
+    const testEndpoints = [
+      'https://www.google.com/favicon.ico',
+      'https://www.cloudflare.com/favicon.ico',
+      'https://www.apple.com/favicon.ico'
+    ];
+
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      // Try different endpoints for better reliability
+      const endpoint = testEndpoints[attempt % testEndpoints.length];
+      
+      try {
+        console.log(`Checking connectivity (attempt ${attempt + 1}) to ${endpoint}`);
+        const response = await fetch(endpoint, {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: AbortSignal.timeout(3000) // 3 second timeout
+        });
+        console.log(`Connectivity check successful to ${endpoint}`);
+        return true;
+      } catch (error) {
+        console.warn(`Connectivity check failed (attempt ${attempt + 1}):`, error);
+        if (attempt < retries) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+    }
+    
+    console.log('All connectivity checks failed');
+    return false;
+  };
 
   const handleImageSelect = (file: File | null) => {
     setSelectedImage(file);
     setResult(null);
     // Reset forceOffline when selecting a new image
     setForceOffline(false);
-  };
-
-  const checkInternetConnectivity = async (): Promise<boolean> => {
-    try {
-      // Try to fetch a reliable endpoint with a short timeout
-      const response = await fetch('https://www.google.com/favicon.ico', {
-        method: 'HEAD',
-        mode: 'no-cors',
-        signal: AbortSignal.timeout(5000)
-      });
-      return true;
-    } catch (error) {
-      console.log('Internet connectivity check failed:', error);
-      return false;
-    }
   };
 
   const analyzeImageOffline = async () => {
@@ -142,26 +180,19 @@ const Index = () => {
       return;
     }
 
-    // Check if browser reports offline
-    if (!isOnline) {
-      console.log('Browser reports offline, using offline analysis');
-      await analyzeImageOffline();
-      return;
-    }
+    console.log('Starting online analysis...');
+    setIsProcessing(true);
+    setProcessingStage('uploading');
 
-    // Double-check internet connectivity
+    // Check internet connectivity with retries before proceeding
     const hasInternet = await checkInternetConnectivity();
     if (!hasInternet) {
-      console.log('No internet connectivity detected, using offline analysis');
+      console.log('No internet connectivity detected, falling back to offline mode');
       await analyzeImageOffline();
       return;
     }
 
     // Proceed with online analysis
-    console.log('Starting online analysis...');
-    setIsProcessing(true);
-    setProcessingStage('uploading');
-
     try {
       // Simulate uploading stage
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -171,14 +202,33 @@ const Index = () => {
       formData.append('file', selectedImage);
 
       console.log('Sending request to API...');
-      console.log('Selected image:', selectedImage.name, selectedImage.size, selectedImage.type);
       
-      // Reduced timeout to 30 seconds for faster fallback
-      const response = await fetch('https://tomatoe-plant-disease-predictor.onrender.com/predict', {
-        method: 'POST',
-        body: formData,
-        signal: AbortSignal.timeout(30000)
-      });
+      // Try the online API with a timeout and retry logic
+      let response;
+      const maxRetries = 2;
+      let lastError;
+      
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          response = await fetch('https://tomatoe-plant-disease-predictor.onrender.com/predict', {
+            method: 'POST',
+            body: formData,
+            signal: AbortSignal.timeout(15000) // 15 second timeout per attempt
+          });
+          break; // If successful, exit the retry loop
+        } catch (error) {
+          lastError = error;
+          if (attempt < maxRetries) {
+            console.warn(`API attempt ${attempt + 1} failed, retrying...`, error);
+            await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1))); // Exponential backoff
+          }
+        }
+      }
+
+      // If all retries failed
+      if (!response) {
+        throw lastError || new Error('Failed to connect to the server after multiple attempts');
+      }
 
       console.log('Response received:', response.status, response.statusText);
 

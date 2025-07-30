@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 
 // Optimize transformers.js for better performance
@@ -25,20 +24,37 @@ class OfflineDetectionService {
   private initializationPromise: Promise<void> | null = null;
   private modelCache: Map<string, any> = new Map();
 
+  // More specific model for plant disease detection
+  private readonly MODEL_NAME = 'nateraw/plant-disease-detection';
+  private readonly FALLBACK_MODEL = 'Xenova/mobilenet_v2_1.4_224';
+  
+  // Tomato leaf related labels for verification
+  private readonly TOMATO_LEAF_LABELS = [
+    'tomato', 'tomato leaf', 'plant leaf', 'tomato plant', 'leaf',
+    'tomato leaves', 'plant leaves', 'tomato plant leaf'
+  ];
+  
+  // Non-plant related labels
+  private readonly NON_PLANT_LABELS = [
+    'person', 'human', 'face', 'animal', 'building', 'object', 
+    'car', 'indoor', 'furniture', 'electronic', 'clothing',
+    'food', 'vehicle', 'road', 'sky', 'water', 'dog', 'cat'
+  ];
+
   async initialize() {
     if (this.isInitialized) return;
     if (this.initializationPromise) return this.initializationPromise;
     
-    console.log('Initializing optimized offline model...');
+    console.log('Initializing optimized plant disease detection model...');
     
     this.initializationPromise = (async () => {
       try {
-        // Use the fastest available model for better performance
+        // Try to load the plant disease detection model first
         this.classifier = await pipeline(
           'image-classification',
-          'Xenova/mobilenet_v2_1.4_224',
+          this.MODEL_NAME,
           { 
-            dtype: 'fp16', // Use half precision for faster inference
+            dtype: 'fp16',
             revision: 'main',
             progress_callback: (progress: any) => {
               if (progress.status === 'progress') {
@@ -47,15 +63,21 @@ class OfflineDetectionService {
             }
           }
         );
-        console.log('Optimized offline model initialized successfully');
+        console.log('Plant disease detection model initialized successfully');
       } catch (error) {
-        console.error('Failed to initialize optimized model, trying fallback:', error);
-        // Fallback to basic model
-        this.classifier = await pipeline(
-          'image-classification',
-          'Xenova/mobilenet_v2_1.4_224'
-        );
-        console.log('Fallback model initialized');
+        console.error('Failed to initialize plant disease model, trying fallback:', error);
+        try {
+          // Fallback to basic model if plant model fails
+          this.classifier = await pipeline(
+            'image-classification',
+            this.FALLBACK_MODEL,
+            { dtype: 'fp16' }
+          );
+          console.log('Fallback model initialized');
+        } catch (fallbackError) {
+          console.error('Failed to initialize fallback model:', fallbackError);
+          throw new Error('Could not initialize any offline model');
+        }
       }
       this.isInitialized = true;
     })();
@@ -71,12 +93,12 @@ class OfflineDetectionService {
 
       console.log('Running comprehensive offline disease detection...');
       
-      // Optimize image processing
-      const optimizedImage = await this.optimizeImage(imageFile);
+      // Optimize and validate image
+      const optimizedImage = await this.optimizeAndValidateImage(imageFile);
       
       // Run classification with optimized settings
       const results = await this.classifier(optimizedImage, {
-        topk: 5, // More results for better analysis
+        topk: 10, // Get more results for better analysis
       });
       
       const processingTime = performance.now() - startTime;
@@ -99,7 +121,7 @@ class OfflineDetectionService {
     }
   }
 
-  private async optimizeImage(imageFile: File): Promise<File | string> {
+  private async optimizeAndValidateImage(imageFile: File): Promise<File | string> {
     // Skip optimization for small files
     if (imageFile.size < 500000) { // 500KB
       return URL.createObjectURL(imageFile);
@@ -112,7 +134,7 @@ class OfflineDetectionService {
       
       img.onload = () => {
         // Optimize canvas size for faster processing
-        const maxSize = 224; // Match model input size
+        const maxSize = 512; // Slightly larger for better quality
         let { width, height } = img;
         
         if (width > height) {
@@ -130,7 +152,9 @@ class OfflineDetectionService {
         canvas.width = width;
         canvas.height = height;
         
-        // Use faster drawing method
+        // Use faster drawing method with better quality
+        ctx!.imageSmoothingEnabled = true;
+        ctx!.imageSmoothingQuality = 'medium';
         ctx!.drawImage(img, 0, 0, width, height);
         
         // Convert to blob with optimized quality
@@ -143,7 +167,7 @@ class OfflineDetectionService {
             }
           },
           'image/jpeg',
-          0.8 // Optimized quality for speed
+          0.85 // Better quality for plant disease detection
         );
       };
       
@@ -156,20 +180,20 @@ class OfflineDetectionService {
   }
 
   private comprehensiveAnalysis(results: any[], fileName: string): OfflineDetectionResult {
-    // Analyze if this is a tomato leaf
-    const isTomatoLeaf = this.detectTomatoLeaf(results, fileName);
+    // Enhanced tomato leaf verification
+    const { isTomatoLeaf, confidence } = this.verifyTomatoLeaf(results, fileName);
     
     if (!isTomatoLeaf) {
-      return this.createFallbackResult('not_tomato');
+      return this.createFallbackResult('not_tomato', confidence);
     }
 
-    // Determine health status and diseases
+    // Determine health status and diseases with improved analysis
     const healthAnalysis = this.analyzeHealthStatus(results, fileName);
     const diseaseAnalysis = this.analyzeDiseases(results, fileName, healthAnalysis);
     
     return {
       is_tomato_leaf: 'tomato',
-      confidence_score: healthAnalysis.confidence,
+      confidence_score: Math.max(confidence, healthAnalysis.confidence),
       health_status: healthAnalysis.status,
       diseases_detected: diseaseAnalysis.diseases,
       symptoms_observed: diseaseAnalysis.symptoms,
@@ -181,27 +205,44 @@ class OfflineDetectionService {
     };
   }
 
-  private detectTomatoLeaf(results: any[], fileName: string): boolean {
+  private verifyTomatoLeaf(results: any[], fileName: string): { isTomatoLeaf: boolean; confidence: number } {
     const fileNameLower = fileName.toLowerCase();
+    let tomatoConfidence = 0;
+    let nonPlantConfidence = 0;
     
-    // Check for non-tomato indicators
-    const nonTomatoIndicators = ['person', 'human', 'face', 'animal', 'building', 'object', 'car', 'indoor'];
-    const tomatoIndicators = ['plant', 'leaf', 'green', 'tomato', 'vegetation'];
+    // Check filename for hints
+    if (fileNameLower.includes('tomato') || fileNameLower.includes('leaf')) {
+      tomatoConfidence += 0.2;
+    }
     
     // Analyze classification results
     for (const result of results) {
-      const label = result.label?.toLowerCase() || '';
+      const label = (result.label || '').toLowerCase();
+      const score = result.score || 0;
       
-      for (const indicator of nonTomatoIndicators) {
-        if (label.includes(indicator) && result.score > 0.3) {
-          return false;
-        }
+      // Check for tomato/plant indicators
+      if (this.TOMATO_LEAF_LABELS.some(tl => label.includes(tl))) {
+        tomatoConfidence += score * 0.8; // Weighted confidence
+      }
+      
+      // Check for non-plant indicators
+      if (this.NON_PLANT_LABELS.some(nl => label.includes(nl))) {
+        nonPlantConfidence += score * 0.5;
       }
     }
     
-    // Check filename for tomato indicators
-    return tomatoIndicators.some(indicator => fileNameLower.includes(indicator)) || 
-           !nonTomatoIndicators.some(indicator => fileNameLower.includes(indicator));
+    // Normalize confidence
+    const finalConfidence = Math.min(1, Math.max(0, tomatoConfidence - (nonPlantConfidence * 0.5)));
+    const isTomato = finalConfidence > 0.3; // Lower threshold for better detection
+       
+    console.log(`Tomato leaf verification - Confidence: ${(finalConfidence * 100).toFixed(1)}%, ` +
+                `Tomato indicators: ${tomatoConfidence.toFixed(2)}, ` +
+                `Non-plant indicators: ${nonPlantConfidence.toFixed(2)}`);
+    
+    return {
+      isTomatoLeaf: isTomato,
+      confidence: finalConfidence
+    };
   }
 
   private analyzeHealthStatus(results: any[], fileName: string): { status: string; confidence: number } {
@@ -357,11 +398,11 @@ class OfflineDetectionService {
     }
   }
 
-  private createFallbackResult(type: string): OfflineDetectionResult {
+  private createFallbackResult(type: string, confidence?: number): OfflineDetectionResult {
     if (type === 'not_tomato') {
       return {
         is_tomato_leaf: 'not_tomato',
-        confidence_score: 0.85,
+        confidence_score: confidence || 0.85,
         health_status: 'not_applicable',
         diseases_detected: [],
         symptoms_observed: [],
@@ -376,7 +417,7 @@ class OfflineDetectionService {
     // Default fallback for errors
     return {
       is_tomato_leaf: 'tomato',
-      confidence_score: 0.70,
+      confidence_score: confidence || 0.70,
       health_status: 'diseased',
       diseases_detected: ['other'],
       symptoms_observed: ['visual anomalies detected'],
